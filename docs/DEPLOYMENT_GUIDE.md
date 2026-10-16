@@ -19,10 +19,10 @@ repository, and the app needs **no secrets**.
   the app) and approval first.
 - **Uploads are not stored.** `POST /api/predict/batch` processes files in memory; logs hold
   counts only. Prediction history is off (`SCHOLARTRACK_ENABLE_HISTORY=false`).
-- **Memory.** The service imports PyTorch. Measured locally: about 680 MB resident with the
-  GPU build of PyTorch; the image uses the smaller CPU build (CI prints the container's memory
-  use after a few requests — check the "Run and check health" step log). Choose an instance
-  with **at least 1 GB RAM** to be safe.
+- **Memory.** Measured in CI (run 38970263611): the container used **274 MiB** after
+  serving the health check, the dashboard, the full student list and a 196-student batch
+  upload. A 512 MB instance fits, with modest headroom; larger uploads (up to the 5,000-row
+  limit) need more, so prefer 1 GB if your plan offers it.
 
 ## 2. Run it locally
 
@@ -83,8 +83,8 @@ history off). Render sets the `PORT` variable; the image listens on it.
 1. **You:** create a Render account and connect your GitHub account.
 2. **You:** *New → Blueprint*, select `Ronyy33/FGAI-Scholartracker` and the branch
    `claude/modest-bell-box1op` (or `main` after merging). Render reads `render.yaml`.
-3. Pick an instance type with ≥ 1 GB RAM if available on your plan; the free tier may be too
-   small for PyTorch and may sleep when idle (first request then takes a while).
+3. Pick an instance type; a 512 MB instance fits the measured 274 MiB. Free instances may
+   sleep when idle, so the first request after a pause can take a while.
 4. Deploy, wait for "Live", then verify (section 5).
 
 Any other host that runs a Dockerfile (Railway, Fly.io, Google Cloud Run, a university VM)

@@ -273,3 +273,5 @@ Newest entries at the bottom.
   `docs/VIVA_PREPARATION.md`; `examples/predict_request.json` (fictional record, tested).
 - Updated: README, TASKS, PROJECT_STATUS, LEARNING_NOTES (Phases 8–14), EXPERIMENT_LOG
   (EXP-003). The walkthrough's hands-on exercises were run against the API before writing them.
+- CI run 2 (`00ab4dc`, run 38970263611): all three jobs green; the container scored a
+  196-student sample batch and used 274 MiB of memory afterwards (deployment guide updated).
