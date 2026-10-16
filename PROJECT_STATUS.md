@@ -19,7 +19,7 @@ validation-only selection), M7 (calibration, risk score, one-time test evaluatio
 | Features | 15 snapshot features + 3 missing indicators; split 70/15/15 by student (5,112 / 1,088 / 1,100 labelled rows) |
 | Models trained | Run `20261016T200932Z-8acaad7`: majority, logistic regression, MLP, LSTM. Validation ROC-AUC 0.926 / 0.923 / 0.923 (LR / MLP / LSTM); evaluated once on test: ROC-AUC 0.878 / 0.881 / 0.880, statistically tied; **logistic regression chosen** (`reports/evaluation_report.md`) |
 | Backend / frontend | Not started |
-| Tests | 138 passing locally (4 reference-file tests skip where the file is absent, e.g. CI) |
+| Tests | 137 passing locally (4 reference-file tests skip where the file is absent, e.g. CI) |
 | Lint / format | ruff check + format: clean |
 | Git | Branch `claude/modest-bell-box1op` pushed and up to date; nothing merged into `main` |
 | CI / deployment | Not started |
