@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 # Runtime dependencies are added phase by phase as code that needs them is written.
 dependencies = [
+    "matplotlib>=3.9",
     "numpy>=1.26",
     "pandas>=2.2",
     "pyyaml>=6.0",

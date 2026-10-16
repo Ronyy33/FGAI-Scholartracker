@@ -1,0 +1,160 @@
+{
+  "created_utc": "2026-10-16T20:31:31+00:00",
+  "run_id": "20261016T200932Z-8acaad7",
+  "rule": {
+    "primary_metric": "log_loss",
+    "tolerance": 0.005,
+    "simplicity_order": [
+      "logistic_regression",
+      "mlp",
+      "lstm"
+    ]
+  },
+  "tied_within_tolerance": [
+    "logistic_regression",
+    "mlp",
+    "lstm"
+  ],
+  "chosen_model": "logistic_regression",
+  "models": {
+    "majority": {
+      "calibration": {
+        "method": "none"
+      },
+      "threshold": 0.20715962441314553,
+      "validation": {
+        "n": 1088,
+        "positive_rate": 0.19301470588235295,
+        "log_loss": 0.49118463690668124,
+        "brier": 0.1559601079157445,
+        "roc_auc": 0.5,
+        "pr_auc": 0.19301470588235295,
+        "ece": 0.014144918530792583,
+        "threshold": 0.20715962441314553,
+        "tp": 210,
+        "fp": 878,
+        "fn": 0,
+        "tn": 0,
+        "accuracy": 0.19301470588235295,
+        "precision": 0.19301470588235295,
+        "recall": 1.0,
+        "specificity": 0.0,
+        "f1": 0.3235747303543914,
+        "flagged_share": 1.0
+      }
+    },
+    "logistic_regression": {
+      "calibration": {
+        "method": "none",
+        "cv_log_loss_none": 0.2615135888062261,
+        "cv_log_loss_platt": 0.26229783552412433
+      },
+      "threshold": 0.30602864097601457,
+      "validation": {
+        "n": 1088,
+        "positive_rate": 0.19301470588235295,
+        "log_loss": 0.2615135888062261,
+        "brier": 0.07981501999872113,
+        "roc_auc": 0.9255559171276713,
+        "pr_auc": 0.7868564333889209,
+        "ece": 0.019309781596728005,
+        "threshold": 0.30602864097601457,
+        "tp": 163,
+        "fp": 75,
+        "fn": 47,
+        "tn": 803,
+        "accuracy": 0.8878676470588235,
+        "precision": 0.6848739495798319,
+        "recall": 0.7761904761904762,
+        "specificity": 0.9145785876993167,
+        "f1": 0.7276785714285714,
+        "flagged_share": 0.21875
+      }
+    },
+    "mlp": {
+      "calibration": {
+        "method": "none",
+        "cv_log_loss_none": 0.26360897900879887,
+        "cv_log_loss_platt": 0.2646936942579497
+      },
+      "threshold": 0.3508443832397461,
+      "validation": {
+        "n": 1088,
+        "positive_rate": 0.19301470588235295,
+        "log_loss": 0.26360897900879887,
+        "brier": 0.08001040125177367,
+        "roc_auc": 0.9227898904436489,
+        "pr_auc": 0.78366751245016,
+        "ece": 0.013591404861234852,
+        "threshold": 0.3508443832397461,
+        "tp": 161,
+        "fp": 74,
+        "fn": 49,
+        "tn": 804,
+        "accuracy": 0.8869485294117647,
+        "precision": 0.6851063829787234,
+        "recall": 0.7666666666666667,
+        "specificity": 0.9157175398633257,
+        "f1": 0.7235955056179776,
+        "flagged_share": 0.21599264705882354
+      }
+    },
+    "lstm": {
+      "calibration": {
+        "method": "none",
+        "cv_log_loss_none": 0.26412999895005046,
+        "cv_log_loss_platt": 0.2644946045858154
+      },
+      "threshold": 0.3485947251319885,
+      "validation": {
+        "n": 1088,
+        "positive_rate": 0.19301470588235295,
+        "log_loss": 0.26412999895005046,
+        "brier": 0.07983616539782817,
+        "roc_auc": 0.9227248074628486,
+        "pr_auc": 0.7773719127483392,
+        "ece": 0.0163781741156366,
+        "threshold": 0.3485947251319885,
+        "tp": 157,
+        "fp": 60,
+        "fn": 53,
+        "tn": 818,
+        "accuracy": 0.8961397058823529,
+        "precision": 0.7235023041474654,
+        "recall": 0.7476190476190476,
+        "specificity": 0.9316628701594533,
+        "f1": 0.7353629976580797,
+        "flagged_share": 0.19944852941176472
+      }
+    }
+  },
+  "evaluation_config": {
+    "calibration": {
+      "candidates": [
+        "none",
+        "platt"
+      ],
+      "cv_folds": 5,
+      "min_improvement": 0.001,
+      "n_bins": 10
+    },
+    "threshold": {
+      "criterion": "f1"
+    },
+    "top_k_fraction": 0.1,
+    "bootstrap": {
+      "n_resamples": 1000,
+      "seed": 20261019,
+      "unit": "student"
+    },
+    "selection": {
+      "primary_metric": "log_loss",
+      "tolerance": 0.005,
+      "simplicity_order": [
+        "logistic_regression",
+        "mlp",
+        "lstm"
+      ]
+    }
+  }
+}

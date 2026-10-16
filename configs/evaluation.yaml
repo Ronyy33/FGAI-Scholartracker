@@ -1,0 +1,25 @@
+# Evaluation settings (Phase 7). Everything here is decided on VALIDATION data before the
+# test partition is scored once.
+
+calibration:
+  candidates: [none, platt]   # Platt scaling = logistic regression on the model's logit
+  cv_folds: 5                 # folds BY STUDENT inside the validation partition
+  min_improvement: 0.001      # recalibrate only if cross-validated log loss improves by this
+  n_bins: 10                  # reliability curve / expected calibration error
+
+threshold:
+  criterion: f1               # threshold that maximises F1 on validation, per model
+
+top_k_fraction: 0.10          # Top-K risk capture with K = 10 % of evaluated student-semesters
+
+bootstrap:
+  n_resamples: 1000
+  seed: 20261019
+  unit: student               # rows of one student are resampled together
+
+# Pre-registered model-selection rule (written before the test set is scored):
+selection:
+  primary_metric: log_loss    # validation, after the chosen calibration
+  tolerance: 0.005            # models within this of the best count as tied
+  # When tied, prefer the simpler, more explainable model (order of preference):
+  simplicity_order: [logistic_regression, mlp, lstm]

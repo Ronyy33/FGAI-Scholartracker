@@ -1,0 +1,8 @@
+# Academic Risk Score bands (Phase 7).
+# risk_score = round(100 x calibrated probability of a difficulty semester next term).
+# These bands are DEMONSTRATION DEFAULTS - not clinically validated or institutionally approved.
+# They can be changed here without retraining any model. Bands must cover 0-100 without gaps.
+bands:
+  - {name: Low, min: 0, max: 29}
+  - {name: Moderate, min: 30, max: 59}
+  - {name: High, min: 60, max: 100}
