@@ -2,10 +2,10 @@
 
 **Project Sheet:** PS 6 · **Techniques:** Multilayer Perceptron (MLP) and Long Short-Term Memory (LSTM)
 
-> **Project status: Phases 0–5 complete (data foundation and features).**
-> Data validation, the target definition, a synthetic multi-semester dataset and the feature
-> pipeline exist.
-> **No model has been trained yet** and the web application does not exist yet. This README
+> **Project status: Phases 0–6 complete (data, features, first models).**
+> Baselines, an MLP and an LSTM are trained on **synthetic** data and compared on validation data
+> only; calibration, the risk score and the final test evaluation come next. The web application
+> does not exist yet. This README
 > describes only what is implemented; planned work is labelled as planned. See
 > [`PROJECT_STATUS.md`](PROJECT_STATUS.md) for the current state.
 
@@ -31,6 +31,7 @@ penalties, and it does not diagnose motivation, ability or personal circumstance
 | Definition of "falling behind" (target) | [`docs/TARGET_DEFINITION.md`](docs/TARGET_DEFINITION.md) |
 | Synthetic data: design and computed profile | [`reports/synthetic_data_design.md`](reports/synthetic_data_design.md) · [`reports/synthetic_data_profile.md`](reports/synthetic_data_profile.md) |
 | Validation, schema adapter, curriculum, target code | [`src/scholartrack/`](src/scholartrack/) |
+| Models, training and the experiment log | [`src/scholartrack/models/`](src/scholartrack/models/) · [`reports/training_report.md`](reports/training_report.md) · [`docs/EXPERIMENT_LOG.md`](docs/EXPERIMENT_LOG.md) |
 | Feature pipeline and data dictionary | [`src/scholartrack/features/`](src/scholartrack/features/) · [`docs/DATA_DICTIONARY.md`](docs/DATA_DICTIONARY.md) |
 | Configuration (curriculum, target, generator, features) | [`configs/`](configs/) |
 | Learning notes (per phase) | [`docs/LEARNING_NOTES.md`](docs/LEARNING_NOTES.md) |
@@ -39,7 +40,7 @@ penalties, and it does not diagnose motivation, ability or personal circumstance
 
 ## Planned components
 
-Planned, **not yet implemented**: baseline / MLP / LSTM models, calibration
+Planned, **not yet implemented**: calibration
 and evaluation suite, real-outcome benchmark (UCI 697 — download host currently blocked),
 FastAPI backend, React + TypeScript dashboard, CI, Docker image, deployment. The milestone
 plan is in [`docs/PROJECT_PLAN.md`](docs/PROJECT_PLAN.md#2-milestones).
@@ -71,6 +72,8 @@ uv sync                 # create .venv and install the locked dev tools
 uv run pytest           # run the test suite
 uv run python scripts/generate_synthetic_data.py   # regenerate the synthetic dataset
 uv run python scripts/inspect_reference_data.py    # needs data/reference/<file>.csv
+uv run python scripts/train.py                     # train all models (~1 min on CPU)
+uv run python scripts/evaluate.py                  # reload latest run, score validation
 uv run ruff check .     # lint
 uv run ruff format --check .
 ```

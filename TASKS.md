@@ -51,9 +51,12 @@ An item is ticked only with evidence (passing test, generated report, verified U
 - [x] `docs/DATA_DICTIONARY.md` generated from code, with an up-to-date test
 
 ## Phase 6 — Models
-- [ ] Majority baseline · logistic regression · MLP · LSTM
-- [ ] `configs/`, `scripts/train.py`, `scripts/evaluate.py`, versioned artefacts
-- [ ] `docs/EXPERIMENT_LOG.md`
+- [x] Majority baseline · logistic regression · MLP · LSTM (`src/scholartrack/models/`, `src/scholartrack/training/`)
+- [x] `configs/experiment.yaml`, `scripts/train.py`, `scripts/evaluate.py`, versioned artefacts with manifest
+- [x] Validation-only selection; deterministic retraining; reload reproduces predictions; test partition guarded
+- [x] Signal diagnostic (`scripts/diagnose_signal.py`) explaining the MLP/LSTM result
+- [x] `docs/EXPERIMENT_LOG.md` (EXP-001)
+- [ ] Final model choice (Phase 7)
 
 ## Phase 7 — Risk score and evaluation
 - [ ] Calibration on validation; Brier score and reliability curve
@@ -99,9 +102,9 @@ An item is ticked only with evidence (passing test, generated report, verified U
 - [x] Target definition documented.
 - [x] Synthetic-data limitations documented if applicable.
 - [x] Preprocessing pipeline implemented and tested.
-- [ ] Baseline model trained.
-- [ ] MLP trained and evaluated.
-- [ ] LSTM implemented and evaluated if suitable sequential data exists.
+- [x] Baseline model trained.
+- [~] MLP trained and evaluated. *(validation done; test in Phase 7)*
+- [~] LSTM implemented and evaluated if suitable sequential data exists. *(validation done; test in Phase 7)*
 - [ ] No obvious target leakage in the evaluation pipeline.
 - [ ] Metrics calculated from actual held-out predictions.
 - [ ] Model comparison report generated.

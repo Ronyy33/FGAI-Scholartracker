@@ -178,3 +178,24 @@ Newest entries at the bottom.
   are identical after deleting all later semesters), train/serve consistency (features from the
   exported CSV after adapting == features from the generator's tables), and a test that the data
   dictionary matches the code.
+
+## 2026-10-16 — Phase 6: models and training
+
+- Network check: `archive.ics.uci.edu`, `download.pytorch.org`, `analyse.kmi.open.ac.uk` still
+  blocked. Installed scikit-learn 1.9.1 and PyTorch 2.14.1 from PyPI (`uv add`, 26 s); the Linux
+  PyPI build bundles GPU libraries (`.venv` now 5.5 GB) but runs on CPU (CUDA unavailable).
+- Code: `src/scholartrack/models/` (networks, baselines, artefacts), `src/scholartrack/training/`
+  (data, loop, experiment), `src/scholartrack/evaluation/metrics.py`, `configs/experiment.yaml`,
+  `scripts/train.py`, `scripts/evaluate.py`, `scripts/diagnose_signal.py`, `tests/test_models.py`.
+- Official run `20261016T200932Z-8acaad7` (52 s on 4 CPU threads). Validation: logistic
+  regression log loss 0.2615 / ROC-AUC 0.926 / PR-AUC 0.787; MLP 0.2636 / 0.923 / 0.784;
+  LSTM 0.2641 / 0.923 / 0.777; majority 0.4912 / 0.5 / 0.193. Details in `docs/EXPERIMENT_LOG.md`.
+- Verified: deterministic retraining (identical metrics), reload reproduces predictions
+  (≤ 1.1e-16), test partition untouched (guard + a test that removes the test arrays).
+- Exploratory diagnostic (then made reproducible as `scripts/diagnose_signal.py`): history
+  summaries add nothing; an oracle on hidden variables reaches only ROC-AUC 0.936.
+- Problems fixed: `float(loss)` warning → `loss.item()`; report helper re-parsed formatted text
+  (`2.5000`) and printed float dust (`28.0` vs `17`) → `fmt` now keeps text and rounds first
+  (data-quality report regenerated: only that table's formatting changed). My own docstring for
+  the diagnostic claimed "18 deployed inputs" when it used 15 features — corrected.
+- Tests: 120 passing.

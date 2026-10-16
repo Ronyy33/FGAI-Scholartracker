@@ -240,3 +240,50 @@ Grouping by student removes that shortcut.
 "Every feature for semester t uses only semesters up to t, which I verify by deleting the future
 and recomputing. Students are split 70/15/15 by person and cohort, and all preprocessing
 parameters come from the training students only and are saved alongside the model."
+
+---
+
+## Phase 6 — Baselines, MLP and LSTM
+
+### Concept
+- A **baseline** sets the bar: the majority model predicts the overall positive rate for
+  everyone (ROC-AUC 0.5); logistic regression is the simplest model that actually uses features.
+- An **MLP** stacks layers of weighted sums and ReLU non-linearities, so it can learn curved
+  decision boundaries.
+- An **LSTM** reads a sequence one step at a time, keeping a memory (cell state) controlled by
+  gates that decide what to keep, forget and output. Its final hidden state summarises the
+  student's history.
+
+### Why it was required
+PS 6 asks for MLP and LSTM; the baselines show whether that complexity buys anything.
+
+### What we implemented
+- MLP: 18 inputs → 32 ReLU units (dropout 0.1) → 1 logit. LSTM: one 32-unit layer over packed
+  sequences (padding is never read) → dropout 0.3 → 1 logit. Both trained with binary
+  cross-entropy, AdamW, mini-batches of 128, early stopping (patience 20) on validation loss.
+- Settings chosen by validation log loss; the test set is locked until Phase 7.
+
+### Small example — log loss
+A student who did fall behind (label 1): predicting 0.9 costs −ln(0.9) = 0.11; predicting 0.1
+costs −ln(0.1) = 2.30. Confident mistakes are punished hard, so log loss rewards honest
+probabilities — exactly what a risk score needs.
+
+### The result, honestly
+Logistic regression (0.2615) slightly beat the MLP (0.2636) and LSTM (0.2641). A diagnostic
+shows why: in this synthetic data the latest two semesters already capture almost all usable
+information, and even a model knowing the hidden truth only reaches ROC-AUC 0.936. A more
+complex model cannot find signal that is not there.
+
+### Common mistakes
+- Tuning on the test set (we lock it in code).
+- Reweighting classes and then calling the outputs probabilities.
+- Feeding padded zeros to an LSTM as if they were real semesters (we pack sequences and test
+  that random padding changes nothing).
+- Concluding "the LSTM is better/worse" from differences smaller than seed-to-seed variation.
+
+### How to explain it to a professor
+"I trained a majority baseline, logistic regression, an MLP and an LSTM, choosing settings on
+validation data only. All learned models reached validation ROC-AUC ≈ 0.92–0.93; logistic
+regression was marginally best. Using the generator's hidden variables I showed the ceiling is
+≈ 0.936 and that history adds no extra information in this data, which explains why the LSTM
+does not win. On real data with richer histories, the comparison could come out differently."
