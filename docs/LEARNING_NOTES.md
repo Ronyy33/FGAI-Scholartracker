@@ -322,3 +322,91 @@ to Git before I scored the test set once. On the test set the three models are s
 tied (ROC-AUC ≈ 0.88, intervals overlapping), probabilities are calibrated, and the risk bands
 behave as labelled. Test scores were lower than validation; cross-validation shows that is
 normal variation for 180-student partitions."
+
+## Phase 8 — Explaining a prediction
+
+### Concept
+An explanation answers "what about *this* student moved the estimate?". We compare the
+student with a *typical* student: swap one group of their values for typical values, re-score,
+and see how many risk points change.
+
+### Why groups, not single indicators
+Current SGPA, average marks and number of failed subjects describe the same thing. If you swap
+only one, the others still carry the information, and the swapped one can even show the wrong
+sign. Swapping the whole "current-semester results" group gives a sensible answer.
+
+### Small example
+Student SYN24CE0127: SGPA 1.78, 5 subjects not passed → score 99. Replacing their current
+results with typical ones (SGPA 7.22, no failures) lowers the score by 86 points, so
+"Current-semester results +86.3 points · raises risk" is shown first.
+
+### Common mistakes
+- Reading an association as a cause ("attendance does not matter").
+- Turning model signs into advice. Suggestions here come from simple, supportive rules on
+  observed values, with a disclaimer.
+
+### How to explain it to a professor
+"Explanations are perturbation-based over concept groups, measured in risk points against a
+typical student. They are faithful to the model, not causal. Where the data shows an
+explaining-away effect for attendance, the app says so instead of hiding it."
+
+## Phases 9–11 — API, dashboard and privacy
+
+### Concept
+The **API** is a contract: the dashboard (or any other client) sends a request and gets JSON
+back with a fixed shape. The **dashboard** is a client of that API. Keeping them separate means
+the model code is tested once and used everywhere.
+
+### What we implemented
+- FastAPI service that loads a frozen, hash-checked model bundle; endpoints for health, model
+  info, metrics, demo data, analytics, single and batch prediction.
+- Upload safety: size and row limits, `.csv` only, validation report, values never guessed.
+- Privacy: names never used or echoed (even in the upload preview), opaque keys internally,
+  counts-only logs, small groups suppressed, history off by default and identifier-free.
+- React dashboard with six pages, loading / error / empty states and an always-visible
+  synthetic-data banner.
+
+### Small example — why "same code path"
+`POST /api/predict` (one student, JSON) converts the records to CSV text and runs exactly the
+batch path. So a single prediction and the same student inside a batch file cannot disagree.
+
+### Common mistakes
+- Training or re-selecting models inside the web server.
+- Logging uploaded rows (that would store personal data in log files).
+- Adding a password screen that is not real security.
+- Charts that rely on colour alone (we add icons, labels and dash patterns).
+
+### How to explain it to a professor
+"Offline scripts produce a frozen, evaluated bundle; the API only loads and verifies it.
+Single and batch predictions share one code path, uploads are processed in memory, and the
+dashboard is a typed client of the API with accessible charts."
+
+## Phases 12–14 — Testing, CI and deployment
+
+### Concept
+- **CI (continuous integration)**: every push runs the checks on a clean machine, so "works on
+  my laptop" is not enough.
+- **Container**: a Docker image packages code and dependencies so the app runs the same
+  everywhere.
+
+### What we implemented
+GitHub Actions with three jobs: Python (ruff, 162 tests, API smoke test), frontend
+(type-check, lint, tests, build) and Docker (build the image, start it, check `/health`, post a
+sample batch). CI and the image install the **CPU** build of the same PyTorch version as the
+lockfile, avoiding ~3 GB of GPU libraries. The image generates its demo data during the build,
+runs as a non-root user and has a health check.
+
+### Small example — why CI caught nothing (and why that still matters)
+The first CI run was green on all three jobs. That is evidence, not luck: the same steps were
+first rehearsed locally in a fresh clone without the private CSV or the `data/` folder
+(157 passed, 4 skipped), which is exactly the situation on GitHub.
+
+### Common mistakes
+- Tests that pass only because private data happens to be on the developer's machine.
+- Committing `node_modules`, build output, `.env` files or data.
+- Claiming "deployed" without a public URL that answers `/health`.
+
+### How to explain it to a professor
+"Every push is checked on GitHub: lint, 162 Python and 10 frontend tests, an API smoke test,
+and a Docker build with a health check. Deployment is one container; the guide lists the steps
+that need my own hosting account."

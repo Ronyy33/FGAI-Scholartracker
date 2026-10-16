@@ -212,3 +212,64 @@ Newest entries at the bottom.
 - Bugs found and fixed: threshold candidates rounded above constant predictions (crash on the
   majority baseline; regression test added); clipped label and gridlines-over-bars in figures
   (found by viewing them; redrawn with an exact-match check against published metrics).
+
+## 2026-10-16 — Phase 8: explanations and supportive suggestions (`e67137b`)
+
+- Code: `src/scholartrack/explain.py`, `configs/recommendations.yaml` (8 supportive rules +
+  disclaimer), `scripts/explain_global.py` → `reports/explanations.md`, `tests/test_explain.py`.
+- First design (per-indicator perturbation) gave misleading signs for correlated indicators;
+  replaced by five concept groups before any UI used it (`docs/EXPERIMENT_LOG.md`, EXP-003).
+- Found and documented an "explaining away" effect for attendance; shown honestly with a note,
+  and attendance suggestions follow the 75 % guideline rather than the model.
+
+## 2026-10-16 — Phases 10–11: API, serving bundle, optional history (`07d622c`)
+
+- `scripts/export_serving_bundle.py` → `models/serving/` (44 KB: preprocessor, LR as JSON,
+  MLP/LSTM weights, thresholds, test metrics, SHA-256 of every file, dataset manifest hash).
+- `src/scholartrack/api/` (`app.py`, `service.py`, `demo.py`, `schemas.py`, `settings.py`,
+  `history.py`): endpoints listed in `docs/ARCHITECTURE.md`; 2 MB / 5,000-row upload limits;
+  one error shape; counts-only logs; analytics suppress groups < 10; SQLite history off by
+  default and identifier-free (90-day retention).
+- Problems fixed: ruff B008 (`File(...)` default) → `Annotated`; Starlette's httpx notice
+  filtered in pytest config (third-party, not our code).
+- Tests: 18 API tests (157 passed / 4 skipped in a simulated clean clone).
+
+## 2026-10-16 — Phase 9: React dashboard (`926fd70`)
+
+- `frontend/`: React 19, TypeScript, Vite 6, Tailwind 4, Recharts 3, React Router 7, Vitest.
+  Six pages (Overview, Student risk + detail, Batch prediction, Analytics, Model evaluation,
+  About); typed API client; palette validated for contrast and colour-blind separation; models
+  distinguished by colour and dash pattern; band chips use icon + text.
+- Verified in a real browser (Playwright + Chromium) at desktop and phone widths, no console
+  errors. Screenshots revealed and led to fixes: the upload preview showed the `student_name`
+  column (now hidden, with a test); the student list fetched only 200 of 381 students so
+  sorting ignored the rest (now all, paginated client-side; API limit raised to 1,000);
+  history charts captured mid-animation and with smoothed lines (now linear, no animation);
+  legend order and cramped table headers.
+- Upgrades during setup to avoid deprecated packages: ESLint 10, Recharts 3.
+- Checks: `tsc --noEmit`, ESLint, 10 Vitest tests, production build — all clean.
+
+## 2026-10-16 — Phases 12–14: CI, Docker, deployment configuration (`4381c42`)
+
+- `.github/workflows/ci.yml`: Python job (ruff, pytest, demo-data generation, API smoke test
+  with a sample batch), frontend job (type-check, lint, tests, build), Docker job (build, run,
+  `/health`, `/`).
+- `scripts/cpu_requirements.sh`: exact versions from `uv.lock` but PyTorch's CPU build of the
+  same version (dependency install took 8 s on GitHub instead of a 3 GB download).
+- `Dockerfile` (Node build stage → `python:3.13-slim`; demo data generated at build; non-root;
+  `HEALTHCHECK`), `.dockerignore`, `.env.example`, `render.yaml`.
+- Rehearsed locally in a fresh clone without `data/` or the reference CSV: 157 passed,
+  4 skipped; API smoke test passed.
+- **First GitHub Actions run (run 38969332620): all three jobs green**; the container reported
+  `status: ok`, model bundle and demo data loaded (so the data generated in the image matches
+  the bundle's dataset hash).
+- Not possible here: building Docker locally (no daemon) — covered by the CI job; deploying
+  (needs your hosting account) — steps in `docs/DEPLOYMENT_GUIDE.md`.
+
+## 2026-10-16 — Phase 15: documentation
+
+- New: `docs/ARCHITECTURE.md` (Mermaid diagrams), `docs/DEPLOYMENT_GUIDE.md`,
+  `docs/PROJECT_REPORT.md` (with demonstration checklist), `docs/TECHNICAL_WALKTHROUGH.md`,
+  `docs/VIVA_PREPARATION.md`; `examples/predict_request.json` (fictional record, tested).
+- Updated: README, TASKS, PROJECT_STATUS, LEARNING_NOTES (Phases 8–14), EXPERIMENT_LOG
+  (EXP-003). The walkthrough's hands-on exercises were run against the API before writing them.

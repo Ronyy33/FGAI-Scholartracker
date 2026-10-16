@@ -154,3 +154,36 @@ metric with the MLP and LSTM, best validation log loss, well calibrated without 
 its coefficients can be shown and explained to students and faculty. The MLP and LSTM remain
 trained, evaluated and selectable (`configs/` will expose the default model for the API), so the
 application can display all three side by side.
+
+---
+
+## EXP-003 — Per-student explanations (Phase 8)
+
+**Question.** How should the app explain one student's score so that the explanation is both
+faithful to the model and not misleading?
+
+**Attempt 1 — per-indicator perturbation (rejected).** Replacing one indicator at a time with
+its training median and measuring the change in risk produced counter-intuitive signs for
+correlated indicators: e.g. "subjects not passed" could appear to *lower* risk because current
+SGPA and credit-weighted marks already carry the same information (logistic coefficient for
+`n_failed` is −0.142 while the three together clearly raise risk). Showing that to a mentor
+would be misleading, so this design was dropped before any UI was built on it.
+
+**Attempt 2 — concept groups (adopted).** Five groups (current-semester results, previous
+semester and trend, attendance, self-reported study time, stage of the programme) are replaced
+*together* with a typical student's values; the change in risk points is reported, with the
+group's indicators and their typical values. Implemented in `src/scholartrack/explain.py`;
+tested in `tests/test_explain.py`.
+
+**Global check** (`scripts/explain_global.py` → `reports/explanations.md`, validation data):
+- For the 109 validation students with a failed subject, the results group raises the
+  estimate in 94 % (LR) / 96 % (MLP) of cases, mean +56 points. As expected.
+- For the 283 students with attendance < 75 %, the attendance group *lowers* the estimate on
+  average (−4.3 points LR, −4.6 MLP). Cause: in the generator, engagement drives both
+  attendance and marks, so at equal marks lower attendance indicates higher latent ability
+  (*explaining away*). The models are faithful to the data; the association is not causal.
+
+**Decision.** Show the attendance effect honestly with a note; attendance *suggestions* come
+from the 75 % guideline in `configs/recommendations.yaml`, never from the model's sign.
+Permutation importance (drop in validation ROC-AUC) is reported per indicator for the global
+view, where shared credit is expected and explained.

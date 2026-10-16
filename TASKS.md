@@ -67,42 +67,45 @@ An item is ticked only with evidence (passing test, generated report, verified U
 - [x] Final model decision: logistic regression (statistical tie; simplest; calibrated)
 
 ## Phase 8 — Explainability
-- [ ] Per-prediction contributing factors (coefficients / permutation / perturbation)
-- [ ] Supportive, non-punitive suggestions; non-causal wording
+- [x] Per-prediction contributing factors (concept-group perturbation vs a typical student, in risk points)
+- [x] Supportive, non-punitive suggestions (`configs/recommendations.yaml`); non-causal wording and disclaimer
+- [x] Global view: permutation importance + LR coefficients (`reports/explanations.md`); EXP-003
 
 ## Phase 9 — Web application
-- [ ] Overview · Student analysis · Batch prediction · Analytics · Model evaluation · About
-- [ ] Loading / error / empty states; synthetic-mode warning; accessible contrast
+- [x] Overview · Student analysis · Batch prediction · Analytics · Model evaluation · About (`frontend/`)
+- [x] Loading / error / empty states; synthetic-mode banner; icon + text for bands; checked in Chromium at desktop and phone width
 
 ## Phase 10 — API
-- [ ] `/health`, `/model-info`, `/metrics`, `/predict`, `/predict/batch`
-- [ ] Pydantic schemas, limits, safe CSV parsing, consistent errors, API tests
+- [x] `/health`, `/api/model-info`, `/api/metrics`, `/api/predict`, `/api/predict/batch` (+ demo and analytics endpoints)
+- [x] Pydantic schemas, upload limits, safe CSV parsing, one error format, 19 API tests
 
 ## Phase 11 — Database and privacy
-- [ ] Decide whether prediction history is needed; SQLite off by default if so
+- [x] Prediction history: optional SQLite, **off by default**, counts only, no identifiers, 90-day retention
 
 ## Phase 12 — Testing and QA
-- [ ] Full test suite, lint, type checks, frontend tests
-- [ ] GitHub Actions CI; clean-environment install test
+- [x] 162 Python tests (4 skip without the private CSV), ruff lint + format; TypeScript, ESLint, 10 Vitest tests
+- [x] GitHub Actions CI; clean-clone rehearsal; first run green on all three jobs (run 38969332620)
 
 ## Phase 13 — GitHub
-- [ ] Pre-push review (files, secrets, data) shown to you; push with your approval
+- [x] Every push reviewed for data/secrets (hygiene tests + staged-file check); pushed to `claude/modest-bell-box1op` with your approval
+- [ ] **You:** decide whether to open a pull request into `main` (not done unless you ask)
 
 ## Phase 14 — Deployment
-- [ ] Check current host limits; Dockerfile; env example; health check
-- [ ] Deploy (needs your account) and verify public health + sample prediction
+- [x] Dockerfile (non-root, health check), `.env.example`, `render.yaml`; image built and health-checked in CI
+- [ ] **You:** create a hosting account (Hugging Face Spaces or Render) and deploy — steps in `docs/DEPLOYMENT_GUIDE.md`
+- [ ] Verify the public URL (`/health` + sample prediction) once deployed
 
 ## Phase 15 — Documentation
-- [~] `docs/LEARNING_NOTES.md` (Phases 0–1 written)
-- [ ] `docs/PROJECT_REPORT.md`, `docs/TECHNICAL_WALKTHROUGH.md`, `docs/VIVA_PREPARATION.md`
-- [ ] `docs/ARCHITECTURE.md`, `docs/DEPLOYMENT_GUIDE.md`
+- [x] `docs/LEARNING_NOTES.md` (Phases 0–14)
+- [x] `docs/PROJECT_REPORT.md`, `docs/TECHNICAL_WALKTHROUGH.md`, `docs/VIVA_PREPARATION.md`
+- [x] `docs/ARCHITECTURE.md`, `docs/DEPLOYMENT_GUIDE.md`
 
 ## Phase 16 — Final acceptance checklist
 - [x] Dataset research documented.
-- [~] Dataset provenance and licence recorded. *(recorded; source confirmation blocked by network)*
+- [~] Dataset provenance and licence recorded. *(recorded; UCI 697 source confirmation blocked by network)*
 - [x] Reference CSV inspected.
 - [x] Data-quality checks implemented.
-- [x] Target definition documented.
+- [x] Target definition documented. *(thresholds await your confirmation)*
 - [x] Synthetic-data limitations documented if applicable.
 - [x] Preprocessing pipeline implemented and tested.
 - [x] Baseline model trained.
@@ -113,17 +116,17 @@ An item is ticked only with evidence (passing test, generated report, verified U
 - [x] Model comparison report generated.
 - [x] Risk scores and categories work.
 - [x] Calibration assessed where probability predictions are used.
-- [ ] Explanation functionality implemented.
-- [ ] Frontend connected to the real backend.
-- [ ] Single and batch prediction tested.
-- [ ] Prediction CSV export works.
-- [ ] API tests pass.
-- [ ] Frontend checks pass.
-- [ ] Clean installation tested.
-- [ ] README and project report completed.
-- [ ] Viva notes and learning notes completed.
-- [x] Sensitive data and secrets excluded from Git. *(enforced by tests; re-checked every milestone)*
-- [ ] CI configured and verified.
-- [ ] GitHub repository prepared and pushed with my approval.
-- [ ] Deployment completed and verified, or outstanding external requirements documented.
-- [ ] Final demonstration checklist created.
+- [x] Explanation functionality implemented.
+- [x] Frontend connected to the real backend.
+- [x] Single and batch prediction tested.
+- [x] Prediction CSV export works. *(unit-tested; Download CSV clicked in Chromium: 200 rows, no names)*
+- [x] API tests pass.
+- [x] Frontend checks pass.
+- [x] Clean installation tested. *(fresh clone locally + GitHub Actions + Docker build)*
+- [x] README and project report completed.
+- [x] Viva notes and learning notes completed.
+- [x] Sensitive data and secrets excluded from Git. *(enforced by tests; re-checked every push)*
+- [x] CI configured and verified.
+- [x] GitHub repository prepared and pushed with my approval. *(feature branch; merge to `main` is your call)*
+- [~] Deployment completed and verified, or outstanding external requirements documented. *(documented; needs your hosting account)*
+- [x] Final demonstration checklist created. *(`docs/PROJECT_REPORT.md#demonstration-checklist`)*

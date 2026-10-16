@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import dataclasses
+import json
 import logging
 import shutil
 import subprocess
@@ -220,3 +221,12 @@ def test_tampered_bundle_is_refused(settings, tmp_path):
         assert (
             response.status_code == 503 and response.json()["error"]["code"] == "model_unavailable"
         )
+
+
+def test_documented_example_request_is_accepted(client):
+    """examples/predict_request.json is used in the README and deployment guide."""
+    body = json.loads((PROJECT_ROOT / "examples" / "predict_request.json").read_text())
+    assert "student_name" not in body["records"][0]
+    response = client.post("/api/predict", json=body)
+    assert response.status_code == 200
+    assert response.json()["prediction"]["prn"] == "EXAMPLE001"
