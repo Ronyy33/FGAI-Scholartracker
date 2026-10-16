@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Python — lint, tests, API smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.32"
+
+      # Exact versions from uv.lock, but torch from the CPU index (see scripts/cpu_requirements.sh).
+      - name: Install dependencies (CPU torch)
+        run: |
+          uv venv --python 3.13
+          scripts/cpu_requirements.sh > "$RUNNER_TEMP/requirements.txt"
+          uv pip install -r "$RUNNER_TEMP/requirements.txt"
+          uv pip install --no-deps "$(scripts/cpu_requirements.sh torch)" \
+            --index-url https://download.pytorch.org/whl/cpu
+          uv pip install --no-deps -e .
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+
+      - name: Ruff lint
+        run: ruff check .
+
+      - name: Ruff format check
+        run: ruff format --check .
+
+      # The private reference CSV and data/ are not in the repository, so tests that need
+      # them skip; the API tests regenerate the synthetic dataset deterministically.
+      - name: Tests
+        run: pytest -q
+
+      - name: Generate the demo dataset
+        run: python scripts/generate_synthetic_data.py --no-report
+
+      - name: API smoke test
+        run: |
+          uvicorn scholartrack.api.app:app --port 8000 &
+          for i in $(seq 1 30); do curl -sf localhost:8000/api/health && break; sleep 1; done
+          curl -sf localhost:8000/api/health | python -c "import json,sys; d=json.load(sys.stdin); assert d['status']=='ok' and d['demo_data_loaded'], d; print(d)"
+          curl -sf localhost:8000/api/overview > /dev/null
+          curl -sf -X POST localhost:8000/api/predict/batch \
+            -F "file=@data/synthetic/college_format/2026-27_sem5.csv" \
+            | python -c "import json,sys; d=json.load(sys.stdin); print(d['summary'])"
+
+  frontend:
+    name: Frontend — typecheck, lint, tests, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+
+  docker:
+    name: Docker image — build and health check
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build
+        run: docker build -t scholartrack:ci .
+
+      - name: Run and check health
+        run: |
+          docker run -d --name st -p 8000:8000 scholartrack:ci
+          for i in $(seq 1 60); do curl -sf localhost:8000/api/health && break; sleep 1; done
+          curl -sf localhost:8000/api/health
+          curl -sf localhost:8000/ | grep -q '<div id="root">'
+          docker logs st

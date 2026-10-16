@@ -1,0 +1,13 @@
+# Render Blueprint (https://render.com/docs/blueprint-spec): one Docker web service.
+# Render sets PORT itself; the image's CMD listens on it. No secrets are needed.
+services:
+  - type: web
+    name: scholartrack
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - key: SCHOLARTRACK_ENABLE_HISTORY
+        value: "false"
