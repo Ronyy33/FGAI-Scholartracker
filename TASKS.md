@@ -56,12 +56,15 @@ An item is ticked only with evidence (passing test, generated report, verified U
 - [x] Validation-only selection; deterministic retraining; reload reproduces predictions; test partition guarded
 - [x] Signal diagnostic (`scripts/diagnose_signal.py`) explaining the MLP/LSTM result
 - [x] `docs/EXPERIMENT_LOG.md` (EXP-001)
-- [ ] Final model choice (Phase 7)
+- [x] Final model choice (Phase 7)
 
 ## Phase 7 — Risk score and evaluation
-- [ ] Calibration on validation; Brier score and reliability curve
-- [ ] Configurable risk bands (`configs/risk_bands.yaml`)
-- [ ] Full metric suite, top-K capture, model comparison table, JSON report and plots
+- [x] Calibration assessed on validation (Platt vs none, CV by student); Brier, ECE, reliability curves
+- [x] Configurable risk bands (`configs/risk_bands.yaml`) and risk score (`src/scholartrack/risk.py`)
+- [x] Thresholds chosen on validation; pre-registered model choice committed before testing (`776700c`)
+- [x] One-time test evaluation: full metric suite, 95 % CIs by student, paired comparisons, Top-K capture, plots, JSON + Markdown report
+- [x] Validation–test gap analysed (`reports/split_variation.md`)
+- [x] Final model decision: logistic regression (statistical tie; simplest; calibrated)
 
 ## Phase 8 — Explainability
 - [ ] Per-prediction contributing factors (coefficients / permutation / perturbation)
@@ -103,13 +106,13 @@ An item is ticked only with evidence (passing test, generated report, verified U
 - [x] Synthetic-data limitations documented if applicable.
 - [x] Preprocessing pipeline implemented and tested.
 - [x] Baseline model trained.
-- [~] MLP trained and evaluated. *(validation done; test in Phase 7)*
-- [~] LSTM implemented and evaluated if suitable sequential data exists. *(validation done; test in Phase 7)*
-- [ ] No obvious target leakage in the evaluation pipeline.
-- [ ] Metrics calculated from actual held-out predictions.
-- [ ] Model comparison report generated.
-- [ ] Risk scores and categories work.
-- [ ] Calibration assessed where probability predictions are used.
+- [x] MLP trained and evaluated.
+- [x] LSTM implemented and evaluated if suitable sequential data exists.
+- [x] No obvious target leakage in the evaluation pipeline.
+- [x] Metrics calculated from actual held-out predictions.
+- [x] Model comparison report generated.
+- [x] Risk scores and categories work.
+- [x] Calibration assessed where probability predictions are used.
 - [ ] Explanation functionality implemented.
 - [ ] Frontend connected to the real backend.
 - [ ] Single and batch prediction tested.

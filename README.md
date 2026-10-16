@@ -2,10 +2,10 @@
 
 **Project Sheet:** PS 6 · **Techniques:** Multilayer Perceptron (MLP) and Long Short-Term Memory (LSTM)
 
-> **Project status: Phases 0–6 complete (data, features, first models).**
-> Baselines, an MLP and an LSTM are trained on **synthetic** data and compared on validation data
-> only; calibration, the risk score and the final test evaluation come next. The web application
-> does not exist yet. This README
+> **Project status: Phases 0–7 complete (data, models, evaluation).**
+> Baselines, an MLP and an LSTM are trained and evaluated on **synthetic** data; the risk score
+> and bands are defined; test ROC-AUC ≈ 0.88 with the three models statistically tied. The web
+> application does not exist yet. This README
 > describes only what is implemented; planned work is labelled as planned. See
 > [`PROJECT_STATUS.md`](PROJECT_STATUS.md) for the current state.
 
@@ -32,6 +32,7 @@ penalties, and it does not diagnose motivation, ability or personal circumstance
 | Synthetic data: design and computed profile | [`reports/synthetic_data_design.md`](reports/synthetic_data_design.md) · [`reports/synthetic_data_profile.md`](reports/synthetic_data_profile.md) |
 | Validation, schema adapter, curriculum, target code | [`src/scholartrack/`](src/scholartrack/) |
 | Models, training and the experiment log | [`src/scholartrack/models/`](src/scholartrack/models/) · [`reports/training_report.md`](reports/training_report.md) · [`docs/EXPERIMENT_LOG.md`](docs/EXPERIMENT_LOG.md) |
+| Evaluation (test set, once) and model selection | [`reports/evaluation_report.md`](reports/evaluation_report.md) · [`reports/model_selection.json`](reports/model_selection.json) · [`reports/split_variation.md`](reports/split_variation.md) |
 | Feature pipeline and data dictionary | [`src/scholartrack/features/`](src/scholartrack/features/) · [`docs/DATA_DICTIONARY.md`](docs/DATA_DICTIONARY.md) |
 | Configuration (curriculum, target, generator, features) | [`configs/`](configs/) |
 | Learning notes (per phase) | [`docs/LEARNING_NOTES.md`](docs/LEARNING_NOTES.md) |
@@ -40,8 +41,7 @@ penalties, and it does not diagnose motivation, ability or personal circumstance
 
 ## Planned components
 
-Planned, **not yet implemented**: calibration
-and evaluation suite, real-outcome benchmark (UCI 697 — download host currently blocked),
+Planned, **not yet implemented**: explanations, real-outcome benchmark (UCI 697 — download host currently blocked),
 FastAPI backend, React + TypeScript dashboard, CI, Docker image, deployment. The milestone
 plan is in [`docs/PROJECT_PLAN.md`](docs/PROJECT_PLAN.md#2-milestones).
 

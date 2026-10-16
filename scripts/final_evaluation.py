@@ -5,6 +5,8 @@ Usage:
         Decide everything on VALIDATION data and freeze it in <run>/selection.json (and a copy in
         reports/model_selection.json, committed BEFORE the test stage, so Git history shows the
         choice was made without test results).
+    uv run python scripts/final_evaluation.py --stage redraw
+        Redraw the figures from the frozen models; refuses if the metrics would differ.
     uv run python scripts/final_evaluation.py --stage test --final
         Score the TEST partition once with the frozen choices; write reports/evaluation_report.md,
         reports/evaluation_metrics.json and reports/figures/*.png; record the evaluation in the
@@ -101,6 +103,52 @@ def _curves(y, scores: dict[str, np.ndarray]):
     return roc, pr
 
 
+def draw_figures(y, scores, results, chosen, band_table) -> None:
+    FIGURES.mkdir(parents=True, exist_ok=True)
+    roc, pr = _curves(y, {m: scores[m] for m in LEARNED})
+    curve_plot(roc, "roc", y.mean(), FIGURES / "roc_test.png", "test set (synthetic)")
+    curve_plot(pr, "pr", y.mean(), FIGURES / "pr_test.png", "test set (synthetic)")
+    calibration_plot(
+        {m: pd.DataFrame(results[m]["reliability"]) for m in LEARNED},
+        FIGURES / "calibration_test.png",
+        "test set (synthetic)",
+    )
+    t = results[chosen]["threshold"]
+    confusion_plot(
+        t["tn"],
+        t["fp"],
+        t["fn"],
+        t["tp"],
+        FIGURES / "confusion_test.png",
+        f"{LABELS[chosen]} at threshold {t['threshold']:.3f} (test)",
+    )
+    risk_band_plot(band_table, FIGURES / "risk_bands_test.png", LABELS[chosen])
+
+
+def redraw_stage(run_dir: Path, selection: dict) -> None:
+    """Redraw figures from the frozen models without re-deciding anything.
+
+    The test predictions are recomputed with the saved, frozen models (deterministic) and the
+    resulting metrics must equal those already published in reports/evaluation_metrics.json;
+    otherwise the script stops. No calibration, threshold or model choice is revisited.
+    """
+    published = json.loads((REPORTS_DIR / "evaluation_metrics.json").read_text())
+    _, test = predict_partition(run_dir, "test")
+    y = test["label"].to_numpy()
+    scores = {
+        m: apply_calibration(test[m].to_numpy(), selection["models"][m]["calibration"])
+        for m in MODELS
+    }
+    for m in MODELS:
+        now = probability_metrics(y, scores[m])
+        then = published["models"][m]["probability"]
+        if any(abs(now[k] - then[k]) > 1e-9 for k in ("log_loss", "brier", "roc_auc")):
+            raise SystemExit(f"Recomputed metrics for {m} differ from the published ones.")
+    band_table = pd.DataFrame(published["risk_bands"])
+    draw_figures(y, scores, published["models"], published["chosen_model"], band_table)
+    print("Recomputed test metrics match the published report exactly; figures redrawn.")
+
+
 def test_stage(run_dir: Path, cfg: dict, selection: dict) -> tuple[dict, str]:
     run, test = predict_partition(run_dir, "test")
     y, groups = test["label"].to_numpy(), test["student_key"].to_numpy()
@@ -170,26 +218,10 @@ def test_stage(run_dir: Path, cfg: dict, selection: dict) -> tuple[dict, str]:
     band_table = band_table.reindex([b.name for b in bands]).fillna(0).reset_index()
     band_table["range"] = [f"{b.minimum}–{b.maximum}" for b in bands]
 
-    FIGURES.mkdir(parents=True, exist_ok=True)
-    learned_scores = {m: scores[m] for m in LEARNED}
-    roc, pr = _curves(y, learned_scores)
-    curve_plot(roc, "roc", y.mean(), FIGURES / "roc_test.png", "test set (synthetic)")
-    curve_plot(pr, "pr", y.mean(), FIGURES / "pr_test.png", "test set (synthetic)")
-    calibration_plot(
-        {m: pd.DataFrame(results[m]["reliability"]) for m in LEARNED},
-        FIGURES / "calibration_test.png",
-        "test set (synthetic)",
+    draw_figures(y, scores, results, chosen, band_table)
+    test.assign(**{f"{m}_calibrated": scores[m] for m in MODELS}).to_csv(
+        run_dir / "test_predictions.csv", index=False
     )
-    t = results[chosen]["threshold"]
-    confusion_plot(
-        t["tn"],
-        t["fp"],
-        t["fn"],
-        t["tp"],
-        FIGURES / "confusion_test.png",
-        f"{LABELS[chosen]} at threshold {t['threshold']:.3f} (test)",
-    )
-    risk_band_plot(band_table, FIGURES / "risk_bands_test.png", LABELS[chosen])
 
     payload = {
         "run_id": run_dir.name,
@@ -388,7 +420,7 @@ def build_report(m: dict, selection: dict) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--stage", choices=["validation", "test"], required=True)
+    parser.add_argument("--stage", choices=["validation", "test", "redraw"], required=True)
     parser.add_argument("--final", action="store_true", help="required for --stage test")
     parser.add_argument("--run", default=None)
     args = parser.parse_args()
@@ -417,6 +449,9 @@ def main() -> None:
             )
         return
 
+    if args.stage == "redraw":
+        redraw_stage(run_dir, json.loads(selection_path.read_text()))
+        return
     if not args.final:
         raise SystemExit("Refusing to score the test set without --final.")
     if not selection_path.exists():

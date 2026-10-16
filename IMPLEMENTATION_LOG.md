@@ -199,3 +199,16 @@ Newest entries at the bottom.
   (data-quality report regenerated: only that table's formatting changed). My own docstring for
   the diagnostic claimed "18 deployed inputs" when it used 15 features — corrected.
 - Tests: 120 passing.
+
+## 2026-10-16 — Phase 7: calibration, risk score, thresholds, final evaluation
+
+- Code: `src/scholartrack/risk.py`, `src/scholartrack/evaluation/{calibration,classification,plots,runner}.py`,
+  `configs/{risk_bands,evaluation}.yaml`, `scripts/final_evaluation.py` (validation / test / redraw
+  stages), `scripts/diagnose_split_variation.py`, `tests/test_evaluation.py`; matplotlib added.
+- Validation stage → no recalibration needed; thresholds 0.306 / 0.351 / 0.349; all models tied →
+  logistic regression. Committed and pushed (`776700c`) before the test stage.
+- Test stage (once): LR ROC-AUC 0.878 [0.840, 0.910]; models statistically indistinguishable;
+  calibrated risk bands. Validation–test gap analysed and explained as split variation.
+- Bugs found and fixed: threshold candidates rounded above constant predictions (crash on the
+  majority baseline; regression test added); clipped label and gridlines-over-bars in figures
+  (found by viewing them; redrawn with an exact-match check against published metrics).

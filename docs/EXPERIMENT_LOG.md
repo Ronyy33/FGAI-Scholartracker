@@ -87,3 +87,70 @@ ROC-AUC 0.9228 ± 0.0001; LSTM log loss 0.2646 ± 0.0005, ROC-AUC 0.9222 ± 0.00
 interpretable; the MLP and LSTM (required by PS 6) are within a few thousandths. The final model
 will be chosen in Phase 7 using calibration, threshold behaviour, interpretability and the
 documented trade-offs — then evaluated once on the test set.
+
+---
+
+## EXP-002 — Calibration, thresholds, model choice and the one-time test evaluation (Phase 7) · 2026-10-16
+
+| Item | Value |
+|------|-------|
+| Run | `20261016T200932Z-8acaad7` (same models as EXP-001; nothing retrained) |
+| Settings | `configs/evaluation.yaml`, `configs/risk_bands.yaml` |
+| Pre-registration | validation-stage choices committed and pushed in `776700c` **before** the test set was scored (`reports/model_selection.json`) |
+| Test evaluations | exactly one (recorded in the run manifest; a second attempt is refused) |
+
+### Decisions on validation (frozen before testing)
+
+| Model | Calibration (CV by student inside validation) | Threshold (max F1) | Val log loss | Val ECE |
+|-------|---------------------------------------------|-------------------:|-------------:|--------:|
+| Logistic regression | none (Platt: 0.2623 vs none 0.2615) | 0.306 | 0.2615 | 0.0193 |
+| MLP | none (0.2647 vs 0.2636) | 0.351 | 0.2636 | 0.0136 |
+| LSTM | none (0.2645 vs 0.2641) | 0.349 | 0.2641 | 0.0164 |
+
+Selection rule: lowest validation log loss; within 0.005 counts as tied; ties go to the simpler
+model. All three were tied → **logistic regression chosen**.
+
+### Test results (from `reports/evaluation_report.md`; 1,100 rows, 179 students, positive rate 20.4 %)
+
+| Model | ROC-AUC [95 % CI] | PR-AUC [95 % CI] | Brier | F1 at frozen threshold | Top-10 % capture |
+|-------|-------------------|------------------|------:|-----------------------:|-----------------:|
+| Logistic regression (chosen) | 0.878 [0.840, 0.910] | 0.705 [0.587, 0.793] | 0.1013 | 0.621 | 39.7 % (89 of 224) |
+| MLP | 0.881 [0.844, 0.913] | 0.707 [0.596, 0.792] | 0.1012 | 0.616 | 40.6 % |
+| LSTM | 0.880 [0.842, 0.912] | 0.714 [0.602, 0.798] | 0.1001 | 0.630 | 41.1 % |
+| Majority | 0.500 | 0.204 | 0.1622 | 0.338 | 11.2 % |
+
+- Paired differences (chosen − other, bootstrap by student) all have 95 % intervals containing
+  0: **the test set cannot distinguish the three learned models.**
+- Calibration holds on test: risk bands Low / Moderate / High contain 812 / 157 / 131 rows with
+  observed difficulty rates 8.3 % / 36.3 % / 76.3 % — each inside its band's score range.
+- Chosen model at threshold 0.306: TP 155, FP 120, FN 69, TN 756 (recall 0.69, precision 0.56;
+  25 % of students flagged).
+
+### The validation–test gap
+
+Test scores are lower than validation for every model (LR ROC-AUC 0.926 → 0.878). Analysis
+(`scripts/diagnose_split_variation.py` → `reports/split_variation.md`): the 95 % intervals
+overlap (validation [0.898, 0.947]); 7-fold cross-validation by student over all 1,183 students
+gives fold ROC-AUC 0.896–0.934 (mean 0.915) — partitions of ~180 students vary this much by
+chance. Errors are not concentrated in a few test students (worst 10 = 20 % of squared error vs
+27 % in validation); test students had slightly more synthetic shocks (0.385 vs 0.352 per
+student). Conclusion: **sampling variation**, not overfitting (all models dropped equally,
+including the barely tuned logistic regression). Expected ROC-AUC on new synthetic students:
+≈ 0.88–0.93. The published test numbers are reported as they came out.
+
+### Problems and fixes
+
+- Threshold search crashed on the constant majority baseline: candidates rounded to 6 decimals
+  could exceed every prediction and flag nobody. Fixed (exact values) with a regression test —
+  found during the validation stage, before any test scoring.
+- Two figure-layout defects found by looking at the rendered PNGs (clipped confusion-matrix label,
+  gridlines over bars). Fixed; figures redrawn by `--stage redraw`, which recomputes test metrics
+  with the frozen models and refuses unless they equal the published values exactly (they did).
+
+### Final model decision
+
+**Logistic regression** is the default model behind the Academic Risk Score: tied on every
+metric with the MLP and LSTM, best validation log loss, well calibrated without correction, and
+its coefficients can be shown and explained to students and faculty. The MLP and LSTM remain
+trained, evaluated and selectable (`configs/` will expose the default model for the API), so the
+application can display all three side by side.

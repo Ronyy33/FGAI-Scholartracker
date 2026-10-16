@@ -48,6 +48,7 @@ def _axes(title: str, xlabel: str, ylabel: str):
     ax.set_xlabel(xlabel, color=INK_2)
     ax.set_ylabel(ylabel, color=INK_2)
     ax.grid(color=GRID, linewidth=0.6)
+    ax.set_axisbelow(True)  # grid behind the data
     ax.tick_params(colors=MUTED)
     for side in ("top", "right"):
         ax.spines[side].set_visible(False)
@@ -58,7 +59,7 @@ def _axes(title: str, xlabel: str, ylabel: str):
 
 def _save(fig, path: Path) -> None:
     fig.tight_layout()
-    fig.savefig(path, facecolor=SURFACE)
+    fig.savefig(path, facecolor=SURFACE, bbox_inches="tight", pad_inches=0.15)
     plt.close(fig)
 
 
@@ -139,6 +140,7 @@ def confusion_plot(tn: int, fp: int, fn: int, tp: int, path: Path, title: str) -
 def risk_band_plot(bands: pd.DataFrame, path: Path, subtitle: str) -> None:
     """Students per risk band, annotated with the observed difficulty rate in each band."""
     fig, ax = _axes(f"Risk bands — {subtitle}", "Risk band", "Student-semesters")
+    ax.grid(axis="x", visible=False)  # categories need no vertical rules
     bars = ax.bar(
         bands["band"],
         bands["count"],

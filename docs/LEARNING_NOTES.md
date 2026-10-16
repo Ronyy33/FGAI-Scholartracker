@@ -287,3 +287,38 @@ validation data only. All learned models reached validation ROC-AUC ≈ 0.92–0
 regression was marginally best. Using the generator's hidden variables I showed the ceiling is
 ≈ 0.936 and that history adds no extra information in this data, which explains why the LSTM
 does not win. On real data with richer histories, the comparison could come out differently."
+
+---
+
+## Phase 7 — Calibration, risk score and honest evaluation
+
+### Concept
+- **Calibration**: among students scored ≈ 30, about 30 % should actually struggle. Only then is
+  "risk score 30" a probability.
+- **Threshold**: the cut-off that turns a probability into a yes/no flag. 0.5 is not special;
+  with 20 % positives, a lower threshold catches more at-risk students.
+- **Pre-registration**: writing down how you will choose *before* seeing the test results.
+
+### What we implemented
+Calibration check (Platt scaling compared by cross-validation — not needed here), F1-maximising
+thresholds on validation, a pre-registered selection rule committed to Git, then one test
+evaluation with student-level bootstrap intervals, paired model comparisons, Top-K capture,
+reliability tables and risk bands.
+
+### Small example — Top-K capture
+Mentors can meet 110 of 1,100 student-semesters (10 %). The model's top 110 contain 89 of the
+224 who later struggled: capture 39.7 %. The best possible is 110/224 = 49.1 %, so the model
+finds most of what a perfect list could. Precision@K = 89/110 = 81 %.
+
+### Common mistakes
+- Calling accuracy good: 79.6 % accuracy is free by predicting "fine" for everyone.
+- Choosing the threshold or model on the test set, or re-running the test until it looks good.
+- Treating a 0.003 difference as a win without a confidence interval.
+- Hiding an unflattering test result instead of explaining it.
+
+### How to explain it to a professor
+"All decisions — calibration, thresholds, the model — were made on validation data and committed
+to Git before I scored the test set once. On the test set the three models are statistically
+tied (ROC-AUC ≈ 0.88, intervals overlapping), probabilities are calibrated, and the risk bands
+behave as labelled. Test scores were lower than validation; cross-validation shows that is
+normal variation for 180-student partitions."
