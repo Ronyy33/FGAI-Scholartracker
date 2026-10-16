@@ -20,8 +20,16 @@ from scholartrack.evaluation.runner import latest_run_dir
 from scholartrack.paths import PROJECT_ROOT, REPORTS_DIR
 
 BUNDLE = PROJECT_ROOT / "models" / "serving"
-FILES = ("preprocessor.json", "majority.json", "logistic_regression.json", "mlp.json", "mlp.pt",
-         "lstm.json", "lstm.pt", "selection.json")
+FILES = (
+    "preprocessor.json",
+    "majority.json",
+    "logistic_regression.json",
+    "mlp.json",
+    "mlp.pt",
+    "lstm.json",
+    "lstm.pt",
+    "selection.json",
+)
 
 
 def main() -> None:
@@ -49,11 +57,14 @@ def main() -> None:
         "feature_names": manifest["feature_names"],
         "default_model": chosen,
         "models": {
-            m: {"input": "sequence" if m == "lstm" else "snapshot",
-                "calibration": s["calibration"], "threshold": s["threshold"],
+            m: {
+                "input": "sequence" if m == "lstm" else "snapshot",
+                "calibration": s["calibration"],
+                "threshold": s["threshold"],
                 "test_roc_auc": evaluation["models"][m]["probability"]["roc_auc"],
                 "test_pr_auc": evaluation["models"][m]["probability"]["pr_auc"],
-                "test_brier": evaluation["models"][m]["probability"]["brier"]}
+                "test_brier": evaluation["models"][m]["probability"]["brier"],
+            }
             for m, s in selection["models"].items()
         },
         "test_evaluated_utc": evaluation["evaluated_utc"],
@@ -61,8 +72,10 @@ def main() -> None:
     }
     (BUNDLE / "bundle.json").write_text(json.dumps(bundle, indent=2) + "\n")
     size = sum((BUNDLE / f).stat().st_size for f in (*FILES, "bundle.json"))
-    print(f"Exported run {manifest['run_id']} (default model: {chosen}) to "
-          f"{BUNDLE.relative_to(PROJECT_ROOT)} — {size / 1024:.0f} KB")
+    print(
+        f"Exported run {manifest['run_id']} (default model: {chosen}) to "
+        f"{BUNDLE.relative_to(PROJECT_ROOT)} — {size / 1024:.0f} KB"
+    )
 
 
 if __name__ == "__main__":

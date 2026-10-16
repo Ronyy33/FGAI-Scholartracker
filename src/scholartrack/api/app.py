@@ -217,7 +217,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def students(
         q: str = Query("", max_length=20),
         band: str | None = None,
-        limit: int = Query(50, ge=1, le=200),
+        limit: int = Query(50, ge=1, le=1000),
         offset: int = Query(0, ge=0),
     ):
         return demo().list_students(q, band, limit, offset)
