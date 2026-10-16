@@ -29,7 +29,7 @@ allowlisted location for CSV files).
 
 | Dataset | Status | Source | Licence | Notes |
 |---------|--------|--------|---------|-------|
-| Reference CSV (`scholartrack_synthetic_200_students_PRN_sorted.csv`) | **Not yet provided** | You (synthetic, college-style format) | n/a | Schema reference only; never copied into generated data |
+| Reference CSV (`scholartrack_synthetic_200_students_PRN_sorted.csv`) | **Received** 2026-10-16 from `main` (commit `fa4f9f7`); local read-only copy, SHA-256 `2746d8466cbe93159307b2f178f6894f442226b218162ea5a876d38b5201559a` | You (synthetic, college-style format) | n/a | Schema reference only; identities never copied into generated data. See `reports/data_quality_report.md` |
 | UCI 697 — Predict Students' Dropout and Academic Success | Proposed, not downloaded | <https://archive.ics.uci.edu/dataset/697/predict+students+dropout+and+academic+success> | CC BY 4.0 (to be confirmed at source) | Download host currently blocked by the environment's network policy |
 | OULAD | Optional stretch, not downloaded | <https://analyse.kmi.open.ac.uk/open-dataset> | CC BY 4.0 | Download host currently blocked |
 | ScholarTrack synthetic dataset | Not yet generated | `scripts/generate_synthetic_data.py` (Phase 4) | Ours | Regenerable from a fixed seed |

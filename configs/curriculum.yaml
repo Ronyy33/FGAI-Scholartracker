@@ -1,0 +1,148 @@
+# Curriculum and grading configuration.
+#
+# PROVENANCE
+# - Semester 5 is INFERRED from the reference CSV:
+#     * subject codes, maximum marks and assessment schemes are read from its columns;
+#     * credits were recovered by least squares: credit_weighted_marks_pct and
+#       overall_attendance_pct are reproduced to within +/-0.06 using these credits
+#       (see reports/data_quality_report.md).
+#     * CIE max 40 / ETE max 60 for 100-mark theory subjects is inferred from the observed
+#       maxima; it is not an official rule.
+# - Semesters 1-4 and 6-8 are ILLUSTRATIVE and SYNTHETIC. They follow the same structure
+#   so the synthetic generator can produce multi-semester histories. They are not your
+#   college's real syllabus.
+# - The grading rules below are ILLUSTRATIVE. Replace them with your college's official rules
+#   if you have them; nothing else in the code needs to change.
+#
+# Assessment schemes
+#   theory   : CIE (continuous internal evaluation) + ETE (end-term exam) = total
+#   ete_only : ETE only; the CIE column, if present, must be 0 or empty
+#   termwork : termwork only
+
+version: 1
+
+grading:
+  # Subject is passed if total >= pass_total_pct % of max_marks AND, when the subject has an
+  # ETE component, ETE >= pass_ete_pct % of the ETE maximum.
+  pass_total_pct: 40
+  pass_ete_pct: 40
+  # Letter-grade points follow the common 10-point scale (O=10 ... P=4, F=0).
+  # The percentage cut-offs are illustrative.
+  grade_points:          # [minimum total %, grade points]; below the last row (or failed) -> 0
+    - [90, 10]
+    - [80, 9]
+    - [70, 8]
+    - [60, 7]
+    - [55, 6]
+    - [50, 5]
+    - [40, 4]
+
+semesters:
+  1:
+    source: illustrative
+    subjects:
+      CE24BSC101: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24BSC102: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24ESC103: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24ESC104: {credits: 2, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PCC105: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24BSC106: {credits: 1, scheme: termwork, max_marks: 25}
+      CE24ESC107: {credits: 1, scheme: termwork, max_marks: 25}
+      CE24ESC108: {credits: 2, scheme: termwork, max_marks: 50}
+      CE24AEC109: {credits: 2, scheme: ete_only, max_marks: 50}
+      CE24VSE110: {credits: 2, scheme: termwork, max_marks: 50}
+      CE24IKS111: {credits: 1, scheme: ete_only, max_marks: 25}
+  2:
+    source: illustrative
+    subjects:
+      CE24BSC151: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24BSC152: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24ESC153: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PCC154: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24ESC155: {credits: 2, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24BSC156: {credits: 1, scheme: termwork, max_marks: 25}
+      CE24PCC157: {credits: 1, scheme: termwork, max_marks: 25}
+      CE24ESC158: {credits: 2, scheme: termwork, max_marks: 50}
+      CE24AEC159: {credits: 2, scheme: ete_only, max_marks: 50}
+      CE24VSE160: {credits: 2, scheme: termwork, max_marks: 50}
+      CE24CCA161: {credits: 1, scheme: termwork, max_marks: 25}
+  3:
+    source: illustrative
+    subjects:
+      CE24PCC201: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PCC202: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PCC203: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24BSC204: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24MDM205: {credits: 2, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PCC206: {credits: 1, scheme: termwork, max_marks: 50}
+      CE24PCC207: {credits: 1, scheme: termwork, max_marks: 50}
+      CE24PCC208: {credits: 2, scheme: termwork, max_marks: 25}
+      CE24OEL209: {credits: 2, scheme: ete_only, max_marks: 50}
+      CE24AEC210: {credits: 1, scheme: ete_only, max_marks: 25}
+      CE24VSE211: {credits: 2, scheme: termwork, max_marks: 50}
+  4:
+    source: illustrative
+    subjects:
+      CE24PCC251: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PCC252: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PCC253: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24MDM254: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PCC255: {credits: 2, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PCC256: {credits: 1, scheme: termwork, max_marks: 50}
+      CE24PCC257: {credits: 1, scheme: termwork, max_marks: 50}
+      CE24MDM258: {credits: 1, scheme: termwork, max_marks: 25}
+      CE24OEL259: {credits: 2, scheme: ete_only, max_marks: 50}
+      CE24AEC260: {credits: 1, scheme: ete_only, max_marks: 25}
+      CE24VSE261: {credits: 2, scheme: termwork, max_marks: 50}
+  5:
+    source: inferred from reference CSV
+    elective_options: [Cloud Computing, Information Security, Internet of Things, Software Project Management]
+    subjects:
+      CE24PCC301: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PCC302: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PCC303: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PEC304: {credits: 3, scheme: termwork, max_marks: 60}
+      CE24MDM305: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PCC306: {credits: 1, scheme: termwork, max_marks: 50}
+      CE24PCC307: {credits: 1, scheme: termwork, max_marks: 50}
+      CE24PCC308: {credits: 2, scheme: termwork, max_marks: 25}
+      CE24MDM309: {credits: 1, scheme: termwork, max_marks: 25}
+      CE24OEL310: {credits: 2, scheme: ete_only, max_marks: 50}
+      CE24AEC311: {credits: 1, scheme: ete_only, max_marks: 25}
+  6:
+    source: illustrative
+    elective_options: [Machine Learning, Blockchain Technology, Mobile Computing, Data Visualisation]
+    subjects:
+      CE24PCC351: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PCC352: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PCC353: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PEC354: {credits: 3, scheme: termwork, max_marks: 60}
+      CE24MDM355: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PCC356: {credits: 1, scheme: termwork, max_marks: 50}
+      CE24PCC357: {credits: 1, scheme: termwork, max_marks: 50}
+      CE24PCC358: {credits: 2, scheme: termwork, max_marks: 25}
+      CE24MDM359: {credits: 1, scheme: termwork, max_marks: 25}
+      CE24OEL360: {credits: 2, scheme: ete_only, max_marks: 50}
+      CE24AEC361: {credits: 1, scheme: ete_only, max_marks: 25}
+  7:
+    source: illustrative
+    elective_options: [Deep Learning, Cloud Security, Natural Language Processing, DevOps]
+    subjects:
+      CE24PCC401: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PCC402: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PEC403: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PEC404: {credits: 3, scheme: termwork, max_marks: 60}
+      CE24MDM405: {credits: 2, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PCC406: {credits: 1, scheme: termwork, max_marks: 50}
+      CE24PRJ407: {credits: 4, scheme: termwork, max_marks: 100}
+      CE24OEL408: {credits: 2, scheme: ete_only, max_marks: 50}
+      CE24AEC409: {credits: 1, scheme: ete_only, max_marks: 25}
+  8:
+    source: illustrative
+    subjects:
+      CE24PEC451: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PEC452: {credits: 3, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24MDM453: {credits: 2, scheme: theory, max_marks: 100, cie_max: 40, ete_max: 60}
+      CE24PRJ454: {credits: 6, scheme: termwork, max_marks: 100}
+      CE24INT455: {credits: 6, scheme: termwork, max_marks: 100}
+      CE24AEC456: {credits: 1, scheme: ete_only, max_marks: 25}

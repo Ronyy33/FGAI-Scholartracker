@@ -88,3 +88,47 @@ use a documented synthetic dataset in our college format to demonstrate the full
 including genuine semester sequences for the LSTM, and — pending approval — a real public dataset
 with observed dropout/graduation outcomes as a benchmark, so at least one set of results
 reflects real students."
+
+---
+
+## Phase 2 — Inspecting and validating the reference CSV
+
+### Concept
+**Data validation** checks every value against what is *possible* before anything is learned
+from it. A **schema adapter** converts a source's own layout into one internal format so the rest
+of the system does not care where data came from.
+
+### Why it was required
+Your reference file contains 12 impossible values (SGPA 12.4, attendance 145 %, negative marks…).
+A neural network would happily learn from them. Removing just those 12 cells raised the
+correlation between prior SGPA and marks from 0.74 to 0.83 — bad values hide real patterns.
+
+### What we implemented
+- `validation.py` returns structured issues with three severities: **error** (row unusable),
+  **invalid** (value impossible → treated as missing), **warning** (suspicious, kept).
+- `adapter.py` turns the wide file (one row per student, 5 columns per subject) into two tidy
+  tables — one row per student-semester, one row per student-semester-subject — and replaces
+  the PRN with an opaque key.
+- `profiling.py` recovered the **credits** (not in the file!) by least squares.
+
+### Small example — recovering hidden credits
+`credit_weighted_marks_pct = Σ creditᵢ × percentᵢ / Σ creditᵢ`. With 200 students and 11
+unknown weights, we solve 200 equations by least squares. The weights came out as
+0.130 / 0.087 / 0.043 — exactly 3/23, 2/23, 1/23 — and the rounded credits reproduce the column
+to within 0.05 points, i.e. rounding error. Attendance gave the same credits independently.
+
+### Common mistakes
+- "Fixing" an impossible value by guessing (e.g. clipping 145 % to 100 %). We mark it missing
+  instead; a guessed value is fabricated data.
+- Treating a structural zero as a score: the open-elective's CIE is 0 for *everyone* because the
+  subject has no CIE, not because every student scored 0.
+- Trusting library defaults: pandas silently renamed a duplicate column (`a` → `a.1`), which
+  would have hidden a broken file.
+- Hand-typing numbers into a report. Four of my hand-written sentences turned out wrong once I
+  compared them with the computed values; now the report computes every number it states.
+
+### How to explain it to a professor
+"Before modelling, I validated every value against its permitted range and the subject's
+assessment scheme. Impossible values become missing rather than being guessed. I also found that
+the credit-weighted columns let me recover the credit of every subject exactly, which the rest
+of the pipeline needs to compute SGPA."

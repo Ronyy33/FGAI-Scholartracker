@@ -1,0 +1,15 @@
+# Definition of "falling behind" used to create labels (see docs/TARGET_DEFINITION.md).
+#
+# A student-semester is an ACADEMIC DIFFICULTY semester if, in that semester, the student
+#   (a) fails at least one subject (pass rule in configs/curriculum.yaml -> grading), OR
+#   (b) obtains an SGPA below `sgpa_threshold`.
+#
+# The model predicts whether the NEXT semester (horizon = 1) will be a difficulty semester,
+# using only information available at the end of the current semester.
+#
+# All thresholds are ILLUSTRATIVE demonstration values, not official college rules.
+
+name: next_semester_academic_difficulty
+horizon_semesters: 1
+sgpa_threshold: 6.0
+fail_counts_as_difficulty: true

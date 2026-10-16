@@ -62,3 +62,59 @@ Newest entries at the bottom.
 ### Git
 - Committed locally on `claude/modest-bell-box1op`. **Not pushed** — waiting for your explicit
   approval as required by the project's working rules.
+
+---
+
+## 2026-10-16 — Git: making the work visible on GitHub
+
+- You uploaded the reference CSV to `main` (commit `fa4f9f7`, "Add files via upload").
+- My branch had been created from an empty repository, so it shared no history with `main`.
+  Rebased it onto `origin/main` (safe: the branch had never been pushed). Conflict in
+  `README.md` (your one-line placeholder vs. the project README) resolved by keeping the
+  project README.
+- The rebased branch now contained the CSV at the repository root, and
+  `test_no_data_files_outside_fixtures` **failed** — the guard worked as designed.
+- Copied the CSV byte-for-byte to `data/reference/` (Git blob `4879a4a…` identical, SHA-256
+  `2746d846…`), made the copy read-only, then removed the root copy from this branch in its own
+  commit ("Stop tracking the reference CSV on this branch"). `main` is unchanged.
+- Pushed `claude/modest-bell-box1op`; verified with `git ls-remote`.
+
+## 2026-10-16 — Phase 2: reference CSV inspection and validation
+
+### Findings (exploration, then confirmed by code)
+- 200 rows × 66 columns, one semester (5, 2026-27), UTF-8 **with BOM**. No outcome column.
+- 12 impossible values in 12 different rows (SGPA 12.4, attendance 145 % and 132 %, CIE −5 and
+  55/40, ETE 78/60, termwork −3/25 and 35/25, study hours −4, commute −15, gender "Unknown??",
+  part-time job "Sometimes"), 1 unknown elective, 2 stray columns, 20 scattered blank cells.
+- Credits are not in the file but were **recovered exactly** by least squares from
+  `credit_weighted_marks_pct` (and independently from `overall_attendance_pct`):
+  3,3,3,3,3,1,1,2,1,2,1 = 23 credits; residuals ≤ 0.06 (rounding).
+- In all five component errors the subject *total* is correct; the component was altered.
+- Internal inconsistency: prior SGPA is tightly clustered (sd 1.11) but semester-5 marks imply
+  SGPA sd 2.65; 66 % of students would fail ≥ 1 subject under an illustrative 40 % rule, 84 % of
+  those with prior SGPA 6.5–7.5. Verified independently from the raw file.
+
+### Implemented
+- `configs/curriculum.yaml` (semester 5 inferred; semesters 1–4, 6–8 illustrative; grading rules
+  illustrative), `configs/target.yaml`.
+- `src/scholartrack/data/`: `schema.py`, `curriculum.py`, `loader.py`, `validation.py`,
+  `adapter.py`, `profiling.py`; `src/scholartrack/targets.py`, `reporting.py`, `paths.py`.
+- `scripts/inspect_reference_data.py` → `reports/data_quality_report.md` (deterministic, no
+  identifiers).
+
+### Problems met and fixed
+- pandas silently renames duplicate headers (`a` → `a.1`), so a duplicate-column check after
+  `read_csv` can never fire. The loader now inspects the header line itself.
+- pandas 3 rejects positional `axis` (`df.any(1)`) — used `axis=1`.
+- A test expected one warning when a total was altered, but the change also (correctly) moved
+  `credit_weighted_marks_pct` beyond its tolerance; the test was made stricter to expect both.
+- A test helper cast a text column to float; fixed the helper, not the module.
+- Reading the generated report revealed four hand-written sentences that disagreed with the
+  computed numbers (correlations quoted from raw rather than cleaned data; "each blank in a
+  different column" was false; a hard-coded "yes"; an unmeasured claim). All four are now
+  computed. Lesson: never hand-write numbers into a generated report.
+
+### Checks
+- `uv run pytest` → **84 passed** (reference-file tests run locally; they skip in CI where the
+  file is absent). `ruff check` and `ruff format --check` clean. Report regenerated twice →
+  byte-identical; contains no PRN and no surname from the file (tested).
