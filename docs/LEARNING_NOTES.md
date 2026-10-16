@@ -132,3 +132,74 @@ to within 0.05 points, i.e. rounding error. Attendance gave the same credits ind
 assessment scheme. Impossible values become missing rather than being guessed. I also found that
 the credit-weighted columns let me recover the credit of every subject exactly, which the rest
 of the pipeline needs to compute SGPA."
+
+---
+
+## Phase 3 — Defining "falling behind"
+
+### Concept
+A **target** (label) is the thing a supervised model learns to predict. Its definition decides
+what the model can ever mean. **Target leakage** happens when a feature contains information
+that would not exist at prediction time — the model then looks brilliant in testing and fails
+in use.
+
+### Why it was required
+Your file has no outcome column, so "at risk" had to be *defined*. A vague definition ("weak
+student") cannot be evaluated; a concrete one ("fails a subject or SGPA < 6 next semester") can.
+
+### What we implemented
+`targets.py` turns marks into pass/fail, grade points and SGPA, flags difficulty semesters, and
+attaches to each semester *t* the outcome of semester *t + 1*. Unknown stays unknown (NaN).
+
+### Small example
+A student with SGPA 7.4 in semester 4 who fails one subject in semester 5 → the semester-4 row
+gets label 1. Their semester-5 row has no semester 6 yet → `future_semester_not_observed`; the
+app will *score* it, but it is never used for training.
+
+### Common mistakes
+- Using semester *t*'s ETE to predict semester *t*'s result (leakage).
+- Treating "no record" as "no problem": students who leave are often the ones struggling.
+- Presenting illustrative thresholds as official rules.
+
+### How to explain it to a professor
+"The label is computed by a fixed rule from the *next* semester's marks. The model only sees
+information available at the end of the current semester, and rows whose future is unknown are
+excluded from training rather than assumed safe."
+
+---
+
+## Phase 4 — Building a synthetic dataset
+
+### Concept
+A **generative model** is a recipe that produces data from hidden causes. Writing the recipe
+ourselves means every relationship in the data is known, documented and reproducible — but also
+that a model trained on it can only learn *our* recipe.
+
+### Why it was required
+No public dataset matches the college format, and the reference file has one semester only.
+The LSTM needs genuine semester-by-semester histories; this generator provides them.
+
+### What we implemented
+Hidden traits (ability, engagement, trajectory) → semester states with carry-over and shocks →
+attendance and marks per subject → outcomes computed with the project's own target code →
+attrition → missing values → export in the exact reference layout. Parameters were tuned on a
+separate development seed so the official dataset never influenced its own design.
+
+### Small example — why the label is not trivial
+Among synthetic students whose current SGPA is between 6.0 and 6.5, about 30 % have a difficulty
+semester next — the rest do not. Same visible history, different futures, because next
+semester's exam noise and shocks are not visible today. That is what makes prediction a
+*probability*, not a lookup.
+
+### Common mistakes
+- Generating the label directly from the same features the model sees (the model then learns
+  the formula, with perfect but meaningless scores).
+- Tuning the generator on the same data you will report results on.
+- Copying a reference file's identities, or its errors, into "synthetic" data.
+- Forgetting that synthetic metrics measure agreement with the recipe, not real-world accuracy.
+
+### How to explain it to a professor
+"I wrote a documented generative model for multi-semester records in our college's format. It
+produces marks, not labels; the label is computed afterwards from the next semester's marks,
+which contain randomness the model cannot see. The data is reproducible to the byte, passes the
+same validator as uploaded files, and every result on it is explicitly a synthetic-data result."

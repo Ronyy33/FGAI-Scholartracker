@@ -1,0 +1,102 @@
+# Synthetic data generator configuration (Phase 4).
+#
+# Every number here is a DESIGN ASSUMPTION for a demonstration dataset. None is an estimate of
+# real students.
+#
+# Calibration: the marks, attendance, trend and attrition values were tuned on a separate
+# DEVELOPMENT seed (1), in three rounds, to bring SGPA level/spread and key correlations close
+# to the reference file's cleaned values (see reports/synthetic_data_design.md). The official
+# seed below was used only after tuning was finished. See reports/synthetic_data_design.md for the reasoning behind each value and
+# reports/synthetic_data_profile.md for what the generated data actually looks like.
+
+seed: 20261016
+generator_version: 1
+
+population:
+  cohorts: [2019, 2020, 2021, 2022, 2023, 2024]   # year of admission
+  students_per_cohort: 200
+  divisions_per_cohort: 2
+  # The latest semester with results: academic year starting 2026, odd semester.
+  # Cohort 2024 is therefore in semester 5 in 2026-27, exactly like the reference file.
+  current_academic_year_start: 2026
+  current_semester_parity: odd
+  id_prefix: SYN                     # PRNs look like SYN24CE0001 - clearly synthetic
+
+# Hidden (latent) traits. Units are standard deviations of a standard normal variable.
+latent:
+  engagement_ability_correlation: 0.3
+  trajectory_mix: {improving: 0.2, stable: 0.6, declining: 0.2}
+  trend_per_semester:                # added to performance each semester
+    improving: [0.04, 0.12]          # uniform range
+    declining: [-0.12, -0.04]
+    stable_sd: 0.02
+  engagement_follows_trend: 0.6      # share of the trend that also moves engagement
+  carryover: 0.5                     # AR(1): this semester's noise keeps half of last semester's
+  performance_noise_sd: 0.30
+  engagement_noise_sd: 0.35
+  shock:                             # temporary setback (illness, family event, ...)
+    probability: 0.04                # per student per semester
+    size: [0.6, 1.2]                 # performance drop, uniform range
+    engagement_share: 0.5            # engagement drops by half as much
+    persistence: 0.4                 # probability that half of it carries into next semester
+
+marks:
+  subject_score:
+    performance_weight: 0.75
+    engagement_weight: 0.25
+    attendance_effect_per_10pct: 0.08   # small direct effect of attendance on marks
+    subject_difficulty_sd: 0.20         # fixed per subject code
+    noise_sd: 0.30                      # student x subject variation
+  cie:      {mean_pct: 67, scale_pct: 11, noise_sd: 0.45}
+  ete:      {mean_pct: 68, scale_pct: 12, noise_sd: 0.55}
+  termwork: {mean_pct: 69, scale_pct: 11, noise_sd: 0.45, engagement_share: 0.4}
+  ete_absent:                          # student misses the end-term exam (ETE recorded as 0)
+    base_logit: -5.5
+    performance_coef: -1.0
+
+attendance:
+  mean_pct: 81
+  engagement_coef: 5.0
+  student_semester_sd: 6.0
+  subject_sd: 6.0
+  min_pct: 20
+
+study_hours:
+  mean: 14.0
+  engagement_coef: 3.5
+  ability_coef: 1.0
+  noise_sd: 3.0
+  max: 40
+
+part_time_job:
+  year1_rate: 0.38
+  logit_increase_per_year: 0.25
+  propensity_sd: 1.0
+  engagement_effect: -0.25
+
+# Fields with NO effect on any outcome (included for schema compatibility only).
+no_effect_fields:
+  gender: {Female: 0.45, Male: 0.45, Prefer not to say: 0.10}
+  entry_age: {17: 0.10, 18: 0.60, 19: 0.25, 20: 0.05}
+  commute: {hostel_share: 0.10, mean_mins: 27, max_mins: 90}
+
+attrition:                           # leaving the programme after a semester
+  base_logit: -6.0
+  performance_coef: -1.2
+  failures_coef: 0.4                 # per failed subject, capped at 3
+
+missingness:                         # probability that a recorded cell is blank in the export
+  attendance_pct: 0.006
+  cie: 0.004
+  termwork: 0.003
+  ete: 0.0008
+  total: 0.0004
+  prior_sgpa: 0.005
+  study_hours_per_week: 0.02
+  study_hours_extra_if_disengaged: 0.04   # missing-not-at-random: engagement < -1 sd
+  commute_time_mins: 0.01
+  part_time_job: 0.01
+  elective_subject: 0.005
+  gender: 0.01
+  overall_attendance_pct: 0.003
+  credit_weighted_marks_pct: 0.003

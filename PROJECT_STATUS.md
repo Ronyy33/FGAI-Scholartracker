@@ -1,51 +1,48 @@
 # Project Status
 
 **Last updated:** 2026-10-16
-**Current milestone:** M1 — workspace inspection, plan, dataset research, scaffold → **complete (local)**
-**Next milestone:** M2 — reference CSV inspection and validation module → **blocked on the reference CSV**
+**Completed milestones:** M1 (plan + research), M2 (reference CSV validation), M3 (target definition —
+thresholds awaiting your confirmation), M4 (synthetic data generator, college-format track)
+**Next milestone:** M5 — feature pipeline, student-grouped/chronological splits, data dictionary
 
 ## Summary
 
 | Area | State |
 |------|-------|
-| Plan and architecture | Written (`docs/PROJECT_PLAN.md`); dataset strategy awaiting approval |
-| Dataset research | Written; official sources could not be opened (network policy), so facts carry verification levels |
-| Reference CSV | **Not found** in workspace, filesystem, GitHub remote or Google Drive |
-| Data downloaded | None |
-| Models trained | None |
+| Plan and architecture | `docs/PROJECT_PLAN.md`; two-track strategy approved |
+| Dataset research | Written; official sources unreachable from this environment, facts tagged by verification level |
+| Reference CSV | Received; validated; 12 impossible values, 1 unknown elective, 2 stray columns; credits recovered exactly (`reports/data_quality_report.md`) |
+| Target | Defined and implemented: next-semester failure OR SGPA < 6.0 (illustrative thresholds) |
+| Synthetic data (Track S) | Generated: 1,200 students, 8,561 student-semesters, 20.5 % positive label rate among 7,300 labelled rows (`reports/synthetic_data_profile.md`) |
+| Real-outcome benchmark (Track R, UCI 697) | **Blocked**: `archive.ics.uci.edu` still denied by the network policy |
+| Models trained | None yet (Phase 6) |
 | Backend / frontend | Not started |
-| Tests | 11 passing (repository hygiene) |
-| Lint / format | ruff check and ruff format: clean |
-| Git | Committed locally on `claude/modest-bell-box1op`; **not pushed** (awaiting your approval) |
+| Tests | 96 passing locally; without the reference file (as in CI): 92 passed, 4 skipped (verified) |
+| Lint / format | ruff check + format: clean |
+| Git | Branch `claude/modest-bell-box1op` pushed and up to date; nothing merged into `main` |
 | CI / deployment | Not started |
 
 ## Environment facts (verified 2026-10-16)
 
-- Linux, 4 CPUs, 15 GiB RAM, no GPU. Python 3.13.16, uv 0.11.32, Node 22.22.0, npm 10.9.4, Docker present.
-- GitHub repository `Ronyy33/FGAI-Scholartracker` is **public**; default branch `main`; no branches existed before this work.
-- Network policy allows PyPI, npm and raw.githubusercontent.com; **denies** `archive.ics.uci.edu`,
-  `analyse.kmi.open.ac.uk`, `download.pytorch.org`, openml.org, zenodo.org, kaggle.com, huggingface.co.
+- Linux, 4 CPUs, 15 GiB RAM, no GPU. Python 3.13.16, uv 0.11.32, Node 22.22.0, Docker present.
+- Repository `Ronyy33/FGAI-Scholartracker` is **public**; your `main` holds the README placeholder
+  and the reference CSV; all project work is on `claude/modest-bell-box1op`.
+- Network: PyPI, npm, GitHub reachable. **Denied:** `archive.ics.uci.edu`,
+  `analyse.kmi.open.ac.uk`, `download.pytorch.org` (needed for small CPU-only PyTorch wheels).
 
-## Blockers
+## Blockers and decisions needed
 
-| Blocker | Needed from you | Unblocks |
-|---------|-----------------|----------|
-| Reference CSV missing | Provide the file (see options in the latest chat message) — **not** via the public repo | Phase 2 onward for the college format |
-| `archive.ics.uci.edu` blocked | Allow the host in the environment's network settings, or supply the UCI zip | Track R (real-outcome benchmark) |
-| Dataset strategy | Choose two-track (recommended), synthetic-only, or two-track + OULAD | Phases 3–6 scope |
-| Push approval | Confirm pushing to `claude/modest-bell-box1op` | Remote backup of the work |
-
-## Decisions pending your approval
-
-1. Dataset strategy (`docs/PROJECT_PLAN.md` §5).
-2. Target definition — will be finalised in Phase 3 after the CSV is inspected.
-3. Whether your college has documented academic rules (pass marks, attendance minimum, SGPA
-   thresholds). Without them, thresholds stay illustrative and configurable.
+| Item | Needed from you | Unblocks |
+|------|-----------------|----------|
+| Network allow-list | Add `archive.ics.uci.edu` and `download.pytorch.org` (optionally `analyse.kmi.open.ac.uk`) | Track R benchmark; lean PyTorch install for Phase 6 |
+| Thresholds | Confirm SGPA < 6.0 and the 40 %/40 % pass rule, or share your college's rules | Final target sign-off |
+| Reference CSV on `main` | Decide whether to delete it from `main` (it stays in history) | Privacy hygiene of the public repo |
+| Merge to `main` | Ask for a pull request when you want the work on `main` | Visibility on the default branch |
 
 ## Decisions taken (ordinary implementation choices)
 
-- Python packaging with uv + hatchling; ruff for lint/format; pytest.
-- `data/` fully ignored by Git except README and placeholders; tabular formats ignored repo-wide
-  except `tests/fixtures/`.
-- Using the existing repository `Ronyy33/FGAI-Scholartracker` rather than creating
-  `scholartrack-academic-risk`. GitHub lets you rename it later, and the old URLs keep redirecting.
+- Invalid values become missing, never "corrected"; rows with errors are dropped and listed.
+- ETE-only subjects: CIE is *not applicable* (not zero). Stray columns ignored.
+- The synthetic generator copies the reference *schema*, not its inconsistent marks spread;
+  parameters were tuned on a development seed, never on the official dataset.
+- Using the existing repository rather than creating `scholartrack-academic-risk` (renamable later).

@@ -118,3 +118,40 @@ Newest entries at the bottom.
 - `uv run pytest` → **84 passed** (reference-file tests run locally; they skip in CI where the
   file is absent). `ruff check` and `ruff format --check` clean. Report regenerated twice →
   byte-identical; contains no PRN and no surname from the file (tested).
+
+## 2026-10-16 — Phase 3: target definition
+
+- Wrote `docs/TARGET_DEFINITION.md`: end of semester *t* → probability that semester *t + 1* is
+  an academic-difficulty semester (≥ 1 failed subject OR SGPA < 6.0). Thresholds illustrative and
+  configurable; the 10-point letter scale cited (Vikaspedia CBCS page), with the note that
+  percentage cut-offs differ between universities and one hosted copy of the UGC guidelines
+  shows a different scale. A first search returned only a software vendor's page, which was not
+  used as a source.
+- `targets.py` uses three-valued logic (1 / 0 / unknown) so a missing ETE never silently becomes
+  "not at risk"; `label_status` records why a row is unlabelled.
+
+## 2026-10-16 — Phase 4: synthetic data generator
+
+- `configs/synthetic.yaml`, `src/scholartrack/synthetic/generator.py`,
+  `scripts/generate_synthetic_data.py`, `tests/test_synthetic.py`,
+  `reports/synthetic_data_design.md`, generated `reports/synthetic_data_profile.md`.
+- Calibrated on development seed 1 (five configurations; table in the design report), then
+  generated the official dataset with seed 20261016: 1,200 students, 8,561 student-semesters,
+  88,452 subject results, 44 college-format files; label rate 20.5 % among 7,300 labelled rows.
+- **Problems met and fixed**
+  - My first draft of `generate()` ended with placeholder code and never collected the subject
+    tables; caught on review before running, rewritten.
+  - The profile initially contained three statements not supported by its own numbers
+    (attrition "after poor semesters" was not shown by the table; "every band contains both
+    outcomes" was asserted; prior SGPA called "close" despite a wider spread). All three are now
+    computed; the wider spread was traced to failed subjects scoring 0 grade points (sd 0.99
+    among students without a failure vs 1.42 overall).
+  - pandas 3 turns a nullable-integer column back into floats when converted to a NumPy array
+    if it contains a blank, so some marks printed as `22.0`. The reference file has the same
+    quirk; fixed in our export anyway, with a test.
+  - The calibration table in the design report first listed three rounds; five configurations
+    were actually tried. Corrected.
+- **Checks:** 12 synthetic-data tests pass, including CSV → loader → validator → adapter
+  round-trip equal to the generator's tables, zero validation issues across all 44 exports,
+  semester-5 export column-identical to the reference (minus its two stray columns), and
+  byte-identical regeneration (all 48 file hashes and the profile).
