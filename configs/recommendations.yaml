@@ -1,0 +1,54 @@
+# Supportive suggestions (Phase 8). Each rule fires on an observed academic indicator and
+# suggests SUPPORT, never sanctions. Thresholds are illustrative and editable.
+#
+# The system cannot see causes (health, family, finances, motivation); suggestions therefore
+# invite a conversation rather than assume a reason.
+
+rules:
+  - id: attendance
+    feature: attendance_pct
+    below: 75
+    observation: "Attendance this semester was {value:.0f} %, below the 75 % guideline."
+    suggestion: "Check in about attendance and ask whether anything (timetable, travel, health, work) is getting in the way; connect the student with their class mentor."
+  - id: low_subject_attendance
+    feature: share_subjects_attendance_below_75
+    above: 0.30
+    observation: "Attendance was below 75 % in {percent:.0f} % of subjects."
+    suggestion: "Look at which subjects are affected and whether a scheduling or access issue can be resolved."
+  - id: failed_subject
+    feature: n_failed
+    above: 0
+    observation: "{value:.0f} subject(s) not passed this semester."
+    suggestion: "Plan support for the re-examination: subject tutoring, faculty office hours and a realistic preparation schedule."
+  - id: declining_sgpa
+    feature: sgpa_change
+    below: -0.5
+    observation: "SGPA fell by {abs_value:.1f} points since the previous semester."
+    suggestion: "Arrange an academic-advising conversation early next semester to understand the change and agree a plan."
+  - id: low_internal_assessment
+    feature: cie_mean_pct
+    below: 50
+    observation: "Average internal-assessment (CIE) score was {value:.0f} %."
+    suggestion: "Offer study-skills support or peer tutoring early in the semester, when internal assessments can still recover."
+  - id: low_exam_scores
+    feature: ete_mean_pct
+    below: 50
+    observation: "Average end-term exam score was {value:.0f} %."
+    suggestion: "Suggest exam-preparation workshops and practice with past papers."
+  - id: weak_subject
+    feature: min_subject_pct
+    below: 45
+    observation: "The weakest subject total was {value:.0f} %."
+    suggestion: "Identify the subject and pair the student with a tutor or study group for it."
+  - id: low_study_time
+    feature: study_hours_per_week
+    below: 8
+    observation: "Self-reported study time was {value:.1f} hours per week."
+    suggestion: "Discuss study planning and time management; self-reports can be inaccurate, so treat this as a conversation starter."
+
+no_flag_message: "No specific indicator stands out. Continue regular mentoring and monitoring."
+
+disclaimer: >-
+  ScholarTrack is decision support. Scores and factors are statistical associations in
+  (synthetic) training data, not causes or diagnoses, and must never be used on their own to
+  penalise, exclude or label a student.
