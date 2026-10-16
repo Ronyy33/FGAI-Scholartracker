@@ -64,17 +64,17 @@ Identifiers: `PRN` is unique in all 200 rows and follows one pattern (`A99AA9999
 
 | subject | scheme | max marks | columns | credits (config) | mean total % | sd | % below 40 |
 |---|---|---|---|---|---|---|---|
-| CE24PCC301 | theory | 100 | attendance_pct, cie, ete, max_marks, total | 3 | 57.50 | 21.20 | 23 |
-| CE24PCC302 | theory | 100 | attendance_pct, cie, ete, max_marks, total | 3 | 57.50 | 21.90 | 24 |
-| CE24PCC303 | theory | 100 | attendance_pct, cie, ete, max_marks, total | 3 | 57.80 | 21.60 | 23 |
-| CE24PEC304 | termwork | 60 | attendance_pct, max_marks, termwork, total | 3 | 58.20 | 23.70 | 24.50 |
-| CE24MDM305 | theory | 100 | attendance_pct, cie, ete, max_marks, total | 3 | 56 | 21.90 | 28 |
-| CE24PCC306 | termwork | 50 | attendance_pct, max_marks, termwork, total | 1 | 56 | 22.60 | 20.50 |
-| CE24PCC307 | termwork | 50 | attendance_pct, max_marks, termwork, total | 1 | 59.90 | 23.80 | 19.50 |
-| CE24PCC308 | termwork | 25 | attendance_pct, max_marks, termwork, total | 2 | 63.90 | 27.30 | 17 |
-| CE24MDM309 | termwork | 25 | attendance_pct, max_marks, termwork, total | 1 | 64.90 | 28.10 | 19 |
-| CE24OEL310 | ete_only | 50 | attendance_pct, cie, ete, max_marks, termwork, total | 2 | 65.50 | 29 | 20 |
-| CE24AEC311 | ete_only | 25 | attendance_pct, cie, ete, max_marks, termwork, total | 1 | 89.80 | 21.80 | 6 |
+| CE24PCC301 | theory | 100 | attendance_pct, cie, ete, max_marks, total | 3 | 57.5 | 21.2 | 23 |
+| CE24PCC302 | theory | 100 | attendance_pct, cie, ete, max_marks, total | 3 | 57.5 | 21.9 | 24 |
+| CE24PCC303 | theory | 100 | attendance_pct, cie, ete, max_marks, total | 3 | 57.8 | 21.6 | 23 |
+| CE24PEC304 | termwork | 60 | attendance_pct, max_marks, termwork, total | 3 | 58.2 | 23.7 | 24.5 |
+| CE24MDM305 | theory | 100 | attendance_pct, cie, ete, max_marks, total | 3 | 56 | 21.9 | 28 |
+| CE24PCC306 | termwork | 50 | attendance_pct, max_marks, termwork, total | 1 | 56 | 22.6 | 20.5 |
+| CE24PCC307 | termwork | 50 | attendance_pct, max_marks, termwork, total | 1 | 59.9 | 23.8 | 19.5 |
+| CE24PCC308 | termwork | 25 | attendance_pct, max_marks, termwork, total | 2 | 63.9 | 27.3 | 17 |
+| CE24MDM309 | termwork | 25 | attendance_pct, max_marks, termwork, total | 1 | 64.9 | 28.1 | 19 |
+| CE24OEL310 | ete_only | 50 | attendance_pct, cie, ete, max_marks, termwork, total | 2 | 65.5 | 29 | 20 |
+| CE24AEC311 | ete_only | 25 | attendance_pct, cie, ete, max_marks, termwork, total | 1 | 89.8 | 21.8 | 6 |
 
 Three assessment schemes appear: **theory** (CIE out of 40 + ETE out of 60), **ETE-only** (`OEL310`, `AEC311`: their CIE column is 0 in every row, so CIE is treated as *not applicable*, not as a zero score), and **termwork-only**. The 40/60 split is inferred from the observed maxima.
 
@@ -126,11 +126,11 @@ Five rows have a component (CIE, ETE or termwork) that is out of range, so the s
 
 | row | column | value | total | max | abs. diff., recomputed vs reported credit-weighted % |
 |---|---|---|---|---|---|
-| 172 | CE24PCC301_CIE_marks | -5 | 51 | 100 | 0.03 |
-| 9 | CE24PCC302_CIE_marks | 55 | 41 | 100 | 0.02 |
-| 134 | CE24PCC303_ETE_marks | 78 | 24 | 100 | 0.02 |
-| 61 | CE24PCC308_termwork_marks | -3 | 21 | 25 | 0.04 |
-| 151 | CE24MDM309_termwork_marks | 35 | 25 | 25 | 0.04 |
+| 172 | CE24PCC301_CIE_marks | -5 | 51 | 100 | 0.030 |
+| 9 | CE24PCC302_CIE_marks | 55 | 41 | 100 | 0.017 |
+| 134 | CE24PCC303_ETE_marks | 78 | 24 | 100 | 0.022 |
+| 61 | CE24PCC308_termwork_marks | -3 | 21 | 25 | 0.043 |
+| 151 | CE24MDM309_termwork_marks | 35 | 25 | 25 | 0.035 |
 
 ## 7. Missing values (as found)
 

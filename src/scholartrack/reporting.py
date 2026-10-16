@@ -14,7 +14,10 @@ def fmt(value: object, digits: int = 2) -> str:
         return "yes" if value else "no"
     if isinstance(value, int):
         return str(value)
+    if isinstance(value, str):
+        return value.replace("|", "\\|")  # already formatted text: never re-parse it
     if isinstance(value, float):
+        value = round(value, digits)  # 28.000000000000004 -> 28.0 -> "28"
         if value.is_integer() and abs(value) < 1e9:
             return str(int(value))
         return f"{value:.{digits}f}"

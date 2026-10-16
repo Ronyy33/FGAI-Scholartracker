@@ -1,0 +1,39 @@
+# Experiment configuration (Phase 6). Fixed BEFORE training; changes are recorded in
+# docs/EXPERIMENT_LOG.md.
+#
+# Selection rule: within each model family, the configuration with the lowest VALIDATION log
+# loss is chosen. The test partition is not used in this phase.
+
+name: next_semester_difficulty
+dataset_dir: data/synthetic          # produced by scripts/generate_synthetic_data.py
+seed: 20261018
+selection_metric: log_loss            # proper scoring rule: rewards ranking AND honest probabilities
+seeds_for_chosen_networks: 3          # chosen MLP/LSTM settings are re-trained with 3 seeds
+
+logistic_regression:
+  C: [0.01, 0.1, 1.0, 10.0]            # inverse regularisation strength
+  class_weight: [null, balanced]      # "balanced" re-weights classes (distorts probabilities)
+
+mlp:
+  grid:
+    hidden_layers: [[32], [64, 32]]
+    dropout: [0.1, 0.3]
+  training:
+    learning_rate: 0.001
+    weight_decay: 0.0001
+    batch_size: 128
+    max_epochs: 300
+    patience: 20
+
+lstm:
+  num_layers: 1
+  grid:
+    hidden_size: [32, 64]
+    dropout: [0.1, 0.3]
+  training:
+    learning_rate: 0.001
+    weight_decay: 0.0001
+    batch_size: 128
+    max_epochs: 300
+    patience: 20
+    grad_clip: 1.0
