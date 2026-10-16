@@ -146,7 +146,30 @@ def redraw_stage(run_dir: Path, selection: dict) -> None:
             raise SystemExit(f"Recomputed metrics for {m} differ from the published ones.")
     band_table = pd.DataFrame(published["risk_bands"])
     draw_figures(y, scores, published["models"], published["chosen_model"], band_table)
-    print("Recomputed test metrics match the published report exactly; figures redrawn.")
+    write_curves(y, scores, published)
+    print(
+        "Recomputed test metrics match the published report exactly; figures and "
+        "reports/evaluation_curves.json redrawn."
+    )
+
+
+def write_curves(y, scores, published, points: int = 60) -> None:
+    """Down-sampled ROC / PR curves and reliability tables for the dashboard charts."""
+
+    def thin(a, b):
+        idx = np.unique(np.linspace(0, len(a) - 1, min(points, len(a))).round().astype(int))
+        return [{"x": round(float(a[i]), 4), "y": round(float(b[i]), 4)} for i in idx]
+
+    roc, pr = _curves(y, {m: scores[m] for m in LEARNED})
+    curves = {
+        "run_id": published["run_id"],
+        "synthetic_data": True,
+        "positive_rate": published["positive_rate"],
+        "roc": {m: thin(*roc[m]) for m in LEARNED},
+        "pr": {m: thin(*pr[m]) for m in LEARNED},
+        "reliability": {m: published["models"][m]["reliability"] for m in LEARNED},
+    }
+    (REPORTS_DIR / "evaluation_curves.json").write_text(json.dumps(curves, indent=2) + "\n")
 
 
 def test_stage(run_dir: Path, cfg: dict, selection: dict) -> tuple[dict, str]:

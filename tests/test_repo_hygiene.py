@@ -31,7 +31,8 @@ DATA_SUFFIXES = {
     ".onnx",
 }
 # Only hand-made, fully synthetic fixtures may be committed.
-ALLOWED_DATA_PREFIXES = ("tests/fixtures/",)
+# The serving bundle of evaluated models (tiny, trained on synthetic data) is deliberate.
+ALLOWED_DATA_PREFIXES = ("tests/fixtures/", "models/serving/")
 
 pytestmark = pytest.mark.skipif(
     shutil.which("git") is None or not (REPO_ROOT / ".git").exists(),
@@ -79,6 +80,7 @@ def test_no_env_files_committable() -> None:
         "data/anything_new.csv",
         "reports/predictions.csv",
         "artifacts/mlp/model.pt",
+        "models/other/model.pt",
         ".env",
     ],
 )

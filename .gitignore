@@ -27,6 +27,9 @@
 *.onnx
 *.joblib
 *.pkl
+# The small serving bundle of the EVALUATED models is committed on purpose (see
+# scripts/export_serving_bundle.py); nothing else of this kind is.
+!/models/serving/*.pt
 
 # Secrets and local environment files
 .env

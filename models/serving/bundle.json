@@ -1,0 +1,96 @@
+{
+  "bundle_version": 1,
+  "exported_utc": "2026-10-16T21:05:24+00:00",
+  "run_id": "20261016T200932Z-8acaad7",
+  "git_commit_of_training": "8acaad7",
+  "synthetic_data": true,
+  "dataset_manifest_sha256": "3bf92f541da9080b971d8489a1a58ed49878e6e982d33b5eb05c73f1befb2734",
+  "versions": {
+    "python": "3.13.16",
+    "numpy": "2.5.4",
+    "pandas": "3.0.6",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1+cu130",
+    "scholartrack": "0.1.0"
+  },
+  "feature_names": [
+    "semester",
+    "prior_sgpa",
+    "sgpa_current",
+    "sgpa_change",
+    "credit_weighted_pct",
+    "n_failed",
+    "share_subjects_below_50",
+    "min_subject_pct",
+    "cie_mean_pct",
+    "ete_mean_pct",
+    "termwork_mean_pct",
+    "attendance_pct",
+    "min_subject_attendance",
+    "share_subjects_attendance_below_75",
+    "study_hours_per_week",
+    "prior_sgpa_missing",
+    "study_hours_per_week_missing",
+    "sgpa_current_missing"
+  ],
+  "default_model": "logistic_regression",
+  "models": {
+    "majority": {
+      "input": "snapshot",
+      "calibration": {
+        "method": "none"
+      },
+      "threshold": 0.20715962441314553,
+      "test_roc_auc": 0.5,
+      "test_pr_auc": 0.20363636363636364,
+      "test_brier": 0.16218100840782354
+    },
+    "logistic_regression": {
+      "input": "snapshot",
+      "calibration": {
+        "method": "none",
+        "cv_log_loss_none": 0.2615135888062261,
+        "cv_log_loss_platt": 0.26229783552412433
+      },
+      "threshold": 0.30602864097601457,
+      "test_roc_auc": 0.878414465101109,
+      "test_pr_auc": 0.7047011605986903,
+      "test_brier": 0.10134031446201931
+    },
+    "mlp": {
+      "input": "snapshot",
+      "calibration": {
+        "method": "none",
+        "cv_log_loss_none": 0.26360897900879887,
+        "cv_log_loss_platt": 0.2646936942579497
+      },
+      "threshold": 0.3508443832397461,
+      "test_roc_auc": 0.8814670988258317,
+      "test_pr_auc": 0.7067194750405157,
+      "test_brier": 0.10123809704870591
+    },
+    "lstm": {
+      "input": "sequence",
+      "calibration": {
+        "method": "none",
+        "cv_log_loss_none": 0.26412999895005046,
+        "cv_log_loss_platt": 0.2644946045858154
+      },
+      "threshold": 0.3485947251319885,
+      "test_roc_auc": 0.8801064090019569,
+      "test_pr_auc": 0.7135590199486301,
+      "test_brier": 0.1001426528327541
+    }
+  },
+  "test_evaluated_utc": "2026-10-16T20:33:12+00:00",
+  "files_sha256": {
+    "preprocessor.json": "efa466bb809cda2829af25a6f3417e746ab97aba7d781b48a581f171dd196160",
+    "majority.json": "f6bfb7b6cf624a553c260c33608f113b4cb2520a588ecc33c7e782beba4ecb6d",
+    "logistic_regression.json": "e664a1e7004832d5d48100ec3289b1d8e045a02e482023effface6c9f611af19",
+    "mlp.json": "a9da2a01ecf61a47c8b937c38459b564e401c994912bbf89b55e4744ac702ce7",
+    "mlp.pt": "d9712489bcfca53329602af4902a4c7e167b1692c13c79cfd15354016bb14524",
+    "lstm.json": "cc0b6b1a57df9d567269d69c17daad799fb5d596081bcae9e942b706ea68981b",
+    "lstm.pt": "ce4ff2a40fb703568af7980568112458691869387e4a217f8fcfa70098c4e344",
+    "selection.json": "c7bd80875110936d72c492e90a730fd227ea10af600a3e2f3a961865dfd2ff3b"
+  }
+}

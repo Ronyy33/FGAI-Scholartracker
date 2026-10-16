@@ -1,0 +1,7 @@
+{
+  "type": "lstm",
+  "n_inputs": 18,
+  "hidden_size": 32,
+  "dropout": 0.3,
+  "num_layers": 1
+}

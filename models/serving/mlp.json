@@ -1,0 +1,8 @@
+{
+  "type": "mlp",
+  "n_inputs": 18,
+  "hidden_layers": [
+    32
+  ],
+  "dropout": 0.1
+}
