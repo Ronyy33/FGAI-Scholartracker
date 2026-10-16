@@ -155,3 +155,26 @@ Newest entries at the bottom.
   round-trip equal to the generator's tables, zero validation issues across all 44 exports,
   semester-5 export column-identical to the reference (minus its two stray columns), and
   byte-identical regeneration (all 48 file hashes and the profile).
+
+## 2026-10-16 — Phase 5: features, splits, preprocessing, data dictionary
+
+- `configs/features.yaml`; `src/scholartrack/features/` (`specs.py`, `build.py`, `split.py`,
+  `preprocess.py`); `scripts/build_data_dictionary.py` → `docs/DATA_DICTIONARY.md`;
+  `tests/test_features.py`.
+- **Design:** 15 *snapshot* features computable from one college-format row (semester t +
+  `prior_sgpa`) feed logistic regression and the MLP; the LSTM receives the same vector for each
+  semester 1…t. Excluded by default with written reasons: identifiers, gender, age, part-time job,
+  commute, elective, division, academic year; the reported summary columns are recomputed from
+  subject data instead of trusted.
+- **Split:** by student, 70/15/15 within each admission cohort (seed 20261017). On the official
+  synthetic data: 5,112 / 1,088 / 1,100 labelled rows; positive rates 20.7 % / 19.3 % / 20.4 %.
+- **Preprocessor:** missing indicators + training-median imputation + training standardisation,
+  stored as JSON (readable, no pickle).
+- **Problem met:** a check that recomputed attendance equals the reported overall attendance held
+  for only 94.4 % of rows. Cause: the generator computes the reported column before blanking
+  cells, so rows with a blank subject cell are recomputed from fewer subjects. The test now
+  restricts to rows with complete subject data and requires a 100 % match (stricter, passes).
+- **Checks:** 14 feature tests, including no-look-ahead (features and sequences for semester t
+  are identical after deleting all later semesters), train/serve consistency (features from the
+  exported CSV after adapting == features from the generator's tables), and a test that the data
+  dictionary matches the code.

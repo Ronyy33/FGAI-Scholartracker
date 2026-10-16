@@ -1,0 +1,62 @@
+# Feature configuration (Phase 5). docs/DATA_DICTIONARY.md is generated from this file and
+# src/scholartrack/features/specs.py.
+#
+# Every feature for a row "student at the end of semester t" uses ONLY records of semesters <= t.
+# tests/test_features.py checks this by recomputing features after deleting all later semesters.
+
+version: 1
+
+# Snapshot features: computable from ONE college-format row (semester t plus prior_sgpa).
+# Used by the logistic-regression baseline and the MLP, and as the per-semester vector of the
+# LSTM's input sequence.
+snapshot_features:
+  - semester
+  - prior_sgpa
+  - sgpa_current
+  - sgpa_change
+  - credit_weighted_pct
+  - n_failed
+  - share_subjects_below_50
+  - min_subject_pct
+  - cie_mean_pct
+  - ete_mean_pct
+  - termwork_mean_pct
+  - attendance_pct
+  - min_subject_attendance
+  - share_subjects_attendance_below_75
+  - study_hours_per_week
+
+# Missing-value indicators (1 = value was missing) are added for these features, because
+# "missing" can itself be informative (semester 1 has no prior SGPA; study hours are skipped
+# more often by disengaged students in the synthetic data).
+missing_indicators:
+  - prior_sgpa
+  - study_hours_per_week
+  - sgpa_current
+
+# Illustrative cut-offs used to build two of the features above.
+thresholds:
+  low_marks_pct: 50          # share_subjects_below_50
+  low_attendance_pct: 75     # share_subjects_attendance_below_75 (a common minimum-attendance rule)
+
+# Present in the data but deliberately NOT used as model inputs.
+excluded:
+  PRN: direct identifier
+  student_name: direct identifier
+  gender: sensitive attribute; excluded to avoid demographic profiling (kept for fairness audits only)
+  age: sensitive attribute; little academic meaning within one programme year
+  part_time_job: lifestyle/economic circumstance; using it risks flagging students for working rather than for academic signals
+  commute_time_mins: lifestyle; no academic justification
+  elective_subject: a course choice, not a risk signal
+  class_division: administrative grouping
+  academic_year: calendar position; would let a model learn year effects that do not transfer
+  overall_attendance_pct: reported summary; recomputed from subject attendance instead (attendance_pct)
+  credit_weighted_marks_pct: reported summary; recomputed from subject totals instead (credit_weighted_pct)
+
+split:
+  seed: 20261017
+  fractions: {train: 0.70, validation: 0.15, test: 0.15}
+  stratify_by: entry_year      # each admission cohort is split in the same proportions
+
+sequence:
+  max_length: 8                # semesters 1..t, at most 8

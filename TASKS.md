@@ -44,9 +44,11 @@ An item is ticked only with evidence (passing test, generated report, verified U
 - [!] UCI 697 download script with SHA-256 and automatic fact checks (blocked: `archive.ics.uci.edu` not yet allowed)
 
 ## Phase 5 — Features and preprocessing
-- [ ] Feature pipeline module; fit on train only; saved with model
-- [ ] Student-grouped and chronological splits + leakage tests
-- [ ] `docs/DATA_DICTIONARY.md`
+- [x] Feature pipeline (`src/scholartrack/features/`, `configs/features.yaml`): 15 snapshot features + 3 missing indicators; sequences for the LSTM
+- [x] Preprocessor fitted on train only, saved as JSON (saved with each model in Phase 6)
+- [x] Student-grouped 70/15/15 split stratified by admission cohort + leakage tests (no look-ahead, no student overlap, train-only statistics)
+- [x] Train/serve consistency test (exported CSV → adapter → features == internal features)
+- [x] `docs/DATA_DICTIONARY.md` generated from code, with an up-to-date test
 
 ## Phase 6 — Models
 - [ ] Majority baseline · logistic regression · MLP · LSTM
@@ -96,7 +98,7 @@ An item is ticked only with evidence (passing test, generated report, verified U
 - [x] Data-quality checks implemented.
 - [x] Target definition documented.
 - [x] Synthetic-data limitations documented if applicable.
-- [ ] Preprocessing pipeline implemented and tested.
+- [x] Preprocessing pipeline implemented and tested.
 - [ ] Baseline model trained.
 - [ ] MLP trained and evaluated.
 - [ ] LSTM implemented and evaluated if suitable sequential data exists.

@@ -203,3 +203,40 @@ semester's exam noise and shocks are not visible today. That is what makes predi
 produces marks, not labels; the label is computed afterwards from the next semester's marks,
 which contain randomness the model cannot see. The data is reproducible to the byte, passes the
 same validator as uploaded files, and every result on it is explicitly a synthetic-data result."
+
+---
+
+## Phase 5 — Features, splitting and preprocessing
+
+### Concept
+**Features** are the numbers a model sees. **Splitting** keeps some students hidden until the
+end so we can measure performance honestly. **Preprocessing** (imputation, scaling) must be
+*learned from training data only*, then applied unchanged everywhere else.
+
+### Why it was required
+Raw marks for 11 differently-sized subjects cannot be fed to a model directly, and subject lists
+change every semester. Summaries such as "SGPA this semester", "number of failed subjects" and
+"lowest subject attendance" mean the same thing in every semester.
+
+### What we implemented
+- 15 snapshot features per student-semester (+ 3 missing-value indicators).
+- Split **by student**, so the same person never appears in both training and test.
+- A JSON preprocessor: median imputation and standardisation with training statistics.
+- Sequences for the LSTM: the student's feature vectors for semesters 1…t.
+
+### Small example — why split by student?
+If S000123's semester-3 row is in training and their semester-4 row is in test, the model has
+effectively seen that student already; their SGPA barely changes, so the "test" is easy.
+Grouping by student removes that shortcut.
+
+### Common mistakes
+- Fitting the scaler on all data before splitting (test statistics leak into training).
+- Building "history" features with future semesters (we test that deleting the future changes
+  nothing).
+- Computing features one way in training and another way in the app (we test that a CSV
+  exported and re-read gives identical features).
+
+### How to explain it to a professor
+"Every feature for semester t uses only semesters up to t, which I verify by deleting the future
+and recomputing. Students are split 70/15/15 by person and cohort, and all preprocessing
+parameters come from the training students only and are saved alongside the model."

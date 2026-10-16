@@ -2,8 +2,9 @@
 
 **Project Sheet:** PS 6 · **Techniques:** Multilayer Perceptron (MLP) and Long Short-Term Memory (LSTM)
 
-> **Project status: Phases 0–4 complete (data foundation).**
-> Data validation, the target definition and a synthetic multi-semester dataset exist.
+> **Project status: Phases 0–5 complete (data foundation and features).**
+> Data validation, the target definition, a synthetic multi-semester dataset and the feature
+> pipeline exist.
 > **No model has been trained yet** and the web application does not exist yet. This README
 > describes only what is implemented; planned work is labelled as planned. See
 > [`PROJECT_STATUS.md`](PROJECT_STATUS.md) for the current state.
@@ -30,14 +31,15 @@ penalties, and it does not diagnose motivation, ability or personal circumstance
 | Definition of "falling behind" (target) | [`docs/TARGET_DEFINITION.md`](docs/TARGET_DEFINITION.md) |
 | Synthetic data: design and computed profile | [`reports/synthetic_data_design.md`](reports/synthetic_data_design.md) · [`reports/synthetic_data_profile.md`](reports/synthetic_data_profile.md) |
 | Validation, schema adapter, curriculum, target code | [`src/scholartrack/`](src/scholartrack/) |
-| Configuration (curriculum, target, generator) | [`configs/`](configs/) |
+| Feature pipeline and data dictionary | [`src/scholartrack/features/`](src/scholartrack/features/) · [`docs/DATA_DICTIONARY.md`](docs/DATA_DICTIONARY.md) |
+| Configuration (curriculum, target, generator, features) | [`configs/`](configs/) |
 | Learning notes (per phase) | [`docs/LEARNING_NOTES.md`](docs/LEARNING_NOTES.md) |
 | Repository-hygiene tests (no data or secrets committed) | [`tests/test_repo_hygiene.py`](tests/test_repo_hygiene.py) |
 | Task checklist · status · chronological log | [`TASKS.md`](TASKS.md) · [`PROJECT_STATUS.md`](PROJECT_STATUS.md) · [`IMPLEMENTATION_LOG.md`](IMPLEMENTATION_LOG.md) |
 
 ## Planned components
 
-Planned, **not yet implemented**: feature pipeline, baseline / MLP / LSTM models, calibration
+Planned, **not yet implemented**: baseline / MLP / LSTM models, calibration
 and evaluation suite, real-outcome benchmark (UCI 697 — download host currently blocked),
 FastAPI backend, React + TypeScript dashboard, CI, Docker image, deployment. The milestone
 plan is in [`docs/PROJECT_PLAN.md`](docs/PROJECT_PLAN.md#2-milestones).

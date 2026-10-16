@@ -2,8 +2,8 @@
 
 **Last updated:** 2026-10-16
 **Completed milestones:** M1 (plan + research), M2 (reference CSV validation), M3 (target definition —
-thresholds awaiting your confirmation), M4 (synthetic data generator, college-format track)
-**Next milestone:** M5 — feature pipeline, student-grouped/chronological splits, data dictionary
+thresholds awaiting your confirmation), M4 (synthetic data generator), M5 (features, splits, data dictionary)
+**Next milestone:** M6 — baselines, MLP and LSTM (validation-only model selection)
 
 ## Summary
 
@@ -15,9 +15,10 @@ thresholds awaiting your confirmation), M4 (synthetic data generator, college-fo
 | Target | Defined and implemented: next-semester failure OR SGPA < 6.0 (illustrative thresholds) |
 | Synthetic data (Track S) | Generated: 1,200 students, 8,561 student-semesters, 20.5 % positive label rate among 7,300 labelled rows (`reports/synthetic_data_profile.md`) |
 | Real-outcome benchmark (Track R, UCI 697) | **Blocked**: `archive.ics.uci.edu` still denied by the network policy |
+| Features | 15 snapshot features + 3 missing indicators; split 70/15/15 by student (5,112 / 1,088 / 1,100 labelled rows) |
 | Models trained | None yet (Phase 6) |
 | Backend / frontend | Not started |
-| Tests | 96 passing locally; without the reference file (as in CI): 92 passed, 4 skipped (verified) |
+| Tests | 110 passing locally (4 reference-file tests skip where the file is absent, e.g. CI) |
 | Lint / format | ruff check + format: clean |
 | Git | Branch `claude/modest-bell-box1op` pushed and up to date; nothing merged into `main` |
 | CI / deployment | Not started |
