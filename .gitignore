@@ -1,0 +1,60 @@
+# ---------------------------------------------------------------------------
+# DATA — the repository is PUBLIC. Never commit student-level records.
+# Everything in data/ is ignored except the README and folder placeholders.
+# ---------------------------------------------------------------------------
+/data/*
+!/data/README.md
+!/data/*/
+/data/*/*
+!/data/*/.gitkeep
+
+# Tabular / binary data formats are ignored everywhere except hand-made fixtures.
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.parquet
+*.feather
+*.sqlite
+*.sqlite3
+*.db
+!/tests/fixtures/*.csv
+
+# Trained models and generated artefacts (rebuilt by scripts/train.py)
+/artifacts/
+*.pt
+*.pth
+*.onnx
+*.joblib
+*.pkl
+
+# Secrets and local environment files
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+*.log
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
